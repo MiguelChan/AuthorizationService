@@ -1,0 +1,83 @@
+plugins {
+    id 'java-library'
+    id 'checkstyle'
+    id 'jacoco'
+}
+
+group 'com.mchan'
+version '1.0.0-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+checkstyle {
+    ignoreFailures = false
+    maxWarnings = 0
+}
+
+tasks.register('checkstyle') {
+    dependsOn tasks.checkstyleMain
+    dependsOn tasks.checkstyleTest
+}
+
+tasks.getByName('checkstyle').outputs.upToDateWhen { false }
+
+tasks.register('release') {
+    dependsOn tasks.checkstyle
+    dependsOn tasks.test
+    dependsOn tasks.build
+}
+
+jacoco {
+    toolVersion = '0.8.7'
+    reportsDirectory.set(file("$buildDir/jacoco"))
+}
+
+test.outputs.upToDateWhen { false }
+jacocoTestReport.outputs.upToDateWhen { false }
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.9
+            }
+        }
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    '**/models/**',
+                    '**/exceptions/**',
+                    '**/dto/**',
+            ])
+        }))
+    }
+}

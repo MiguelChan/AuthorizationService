@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+    implementation project(':authorization-service-shared-lib')
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
@@ -44,11 +45,11 @@ test {
 
 flyway {
     //  Dev Config
-    url = ''
-    user = ''
-    password = ''
+    url = 'jdbc:postgresql://localhost:5432/postgres'
+    user = 'flyway_user'
+    password = 'flyway-user-password'
 
-    schemas = []
+    schemas = ['auth_db']
 }
 
 checkstyle {

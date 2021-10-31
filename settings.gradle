@@ -1,2 +1,3 @@
 rootProject.name = 'AuthorizationService'
 include 'authorization-service'
+include 'authorization-service-shared-lib'
