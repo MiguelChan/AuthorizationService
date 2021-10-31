@@ -45,9 +45,14 @@ test {
 
 flyway {
     //  Dev Config
-    url = 'jdbc:postgresql://localhost:5432/postgres'
-    user = 'flyway_user'
-    password = 'flyway-user-password'
+//    url = 'jdbc:postgresql://localhost:5432/postgres'
+//    user = 'flyway_user'
+//    password = 'flyway-user-password'
+
+    // To use when in Cloud Provider.
+    url = System.getenv().get('JDBC_DATABASE_URL')
+    user = System.getenv().get('JDBC_DATABASE_USERNAME')
+    password = System.getenv().get('JDBC_DATABASE_PASSWORD')
 
     schemas = ['auth_db']
 }
