@@ -1,0 +1,2 @@
+rootProject.name = 'AuthorizationService'
+include 'authorization-service'

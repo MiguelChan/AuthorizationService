@@ -1,0 +1,29 @@
+name: AuthorizationService CI
+
+on:
+  push:
+    branches:
+      - mainline
+  pull_request:
+    branches:
+      - mainline
+  workflow_dispatch:
+
+jobs:
+  build-service:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: .
+    steps:
+      - name: Checkout the Source Code
+        uses: actions/checkout@v2
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '16.x'
+          java-package: jdk
+          architecture: x64
+      - name: Run release script
+        run: ./gradlew release
