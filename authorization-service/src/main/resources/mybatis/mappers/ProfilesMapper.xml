@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mchan.authorization.service.entities.dao.mappers.ProfilesMapper">
+    <resultMap id="Profile" type="com.mchan.authorization.service.entities.dao.entities.ProfileEntity">
+        <id property="profileId" column="profile_id" />
+        <result property="firstName" column="first_name" />
+        <result property="lastName" column="last_name" />
+        <result property="emailAddress" column="email_address" />
+        <result property="phoneNumber" column="phone_number" />
+    </resultMap>
+
+    <insert id="createProfile" parameterType="com.mchan.authorization.service.entities.dao.entities.ProfileEntity">
+        INSERT INTO auth_db.profiles (
+            profile_id,
+            first_name,
+            last_name,
+            email_address,
+            phone_number
+        ) VALUES (
+            #{profileId},
+            #{firstName},
+            #{lastName},
+            #{emailAddress},
+            #{phoneNumber}
+        )
+    </insert>
+</mapper>

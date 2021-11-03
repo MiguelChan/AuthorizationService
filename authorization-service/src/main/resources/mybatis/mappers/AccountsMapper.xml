@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mchan.authorization.service.entities.dao.mappers.AccountsMapper">
+    <resultMap id="ClassicAccount" type="com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity">
+        <id property="accountId" column="account_id" />
+        <result property="profileId" column="profile_id" />
+        <result property="accountType" column="account_type" />
+        <result property="email" column="email" />
+        <result property="password" column="password" />
+    </resultMap>
+
+    <insert id="createBasicAccount" parameterType="com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity">
+        INSERT INTO auth_db.accounts (
+            account_id,
+            profile_id,
+            account_type,
+            email,
+            password
+        ) VALUES (
+            #{accountId},
+            #{profileId},
+            #{accountType},
+            #{email},
+            #{password}
+        )
+    </insert>
+</mapper>
