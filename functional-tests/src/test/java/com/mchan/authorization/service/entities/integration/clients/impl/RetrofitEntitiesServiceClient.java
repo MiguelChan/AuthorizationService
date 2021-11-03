@@ -1,8 +1,13 @@
 package com.mchan.authorization.service.entities.integration.clients.impl;
 
+import com.google.gson.Gson;
 import com.mchan.authorization.lib.dtos.PingRequest;
 import com.mchan.authorization.lib.dtos.PingResponse;
+import com.mchan.authorization.lib.dtos.SignUpRequest;
+import com.mchan.authorization.lib.dtos.SignUpResponse;
 import com.mchan.authorization.service.entities.integration.clients.EntitiesServiceClient;
+import com.mchan.authorization.service.entities.integration.utils.BadRequestException;
+import com.mchan.authorization.service.entities.integration.utils.BadRequestResponse;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import retrofit2.Call;
@@ -15,6 +20,7 @@ import retrofit2.Response;
 public class RetrofitEntitiesServiceClient implements EntitiesServiceClient {
 
     private final RetrofitEntitiesClient retrofitEntitiesClient;
+    private final Gson gson;
 
     /**
      * .
@@ -22,8 +28,9 @@ public class RetrofitEntitiesServiceClient implements EntitiesServiceClient {
      * @param retrofitEntitiesClient .
      */
     @Inject
-    public RetrofitEntitiesServiceClient(RetrofitEntitiesClient retrofitEntitiesClient) {
+    public RetrofitEntitiesServiceClient(RetrofitEntitiesClient retrofitEntitiesClient, Gson gson) {
         this.retrofitEntitiesClient = retrofitEntitiesClient;
+        this.gson = gson;
     }
 
     @Override
@@ -34,6 +41,19 @@ public class RetrofitEntitiesServiceClient implements EntitiesServiceClient {
     @Override
     public PingResponse deepPing(PingRequest request) throws Exception {
         return makeCall(retrofitEntitiesClient.deepPing());
+    }
+
+    @Override
+    public SignUpResponse signUp(SignUpRequest request) throws Exception {
+        Response<SignUpResponse> response = retrofitEntitiesClient.signUp(request).execute();
+
+        if (response.body() != null) {
+            return response.body();
+        }
+
+        BadRequestResponse badRequestResponse =
+            gson.fromJson(response.errorBody().charStream(), BadRequestResponse.class);
+        throw new BadRequestException(badRequestResponse);
     }
 
     private <T> T makeCall(Call<T> callMethod) throws Exception {

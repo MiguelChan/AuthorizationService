@@ -26,6 +26,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+    implementation 'commons-validator:commons-validator:1.4.1'
     implementation project(':authorization-service-shared-lib')
 
     compileOnly 'org.projectlombok:lombok'
@@ -36,6 +37,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'io.github.benas:random-beans:3.7.0'
 }
 
 test {
@@ -45,14 +47,14 @@ test {
 
 flyway {
     //  Dev Config
-//    url = 'jdbc:postgresql://localhost:5432/postgres'
-//    user = 'flyway_user'
-//    password = 'flyway-user-password'
+    url = 'jdbc:postgresql://localhost:5432/postgres'
+    user = 'flyway_user'
+    password = 'flyway-user-password'
 
     // To use when in Cloud Provider.
-    url = System.getenv().get('JDBC_DATABASE_URL')
-    user = System.getenv().get('JDBC_DATABASE_USERNAME')
-    password = System.getenv().get('JDBC_DATABASE_PASSWORD')
+//    url = System.getenv().get('JDBC_DATABASE_URL')
+//    user = System.getenv().get('JDBC_DATABASE_USERNAME')
+//    password = System.getenv().get('JDBC_DATABASE_PASSWORD')
 
     schemas = ['auth_db']
 }
@@ -108,7 +110,7 @@ jacocoTestReport {
                     '**/exceptions/**',
                     '**/dto/**',
                     '**/dao/entities/**',
-                    '**/spring/**',
+                    '**/spring/config/**',
                     '**/AuthorizationServiceApplication*'
             ])
         }))
