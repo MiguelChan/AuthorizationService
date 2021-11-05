@@ -18,4 +18,13 @@ public interface ProfileDao {
      */
     String createProfile(ProfileEntity profileEntity);
 
+    /**
+     * Returns the {@link ProfileEntity}.
+     *
+     * @param profileId .
+     *
+     * @return .
+     */
+    ProfileEntity getProfile(String profileId);
+
 }

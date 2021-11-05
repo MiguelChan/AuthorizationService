@@ -26,4 +26,16 @@
             #{phoneNumber}
         )
     </insert>
+
+    <select id="getProfile" resultMap="Profile">
+        SELECT
+            profile_id,
+            first_name,
+            last_name,
+            email_address,
+            phone_number
+        FROM auth_db.profiles
+        WHERE
+            profile_id = #{profileId}
+    </select>
 </mapper>

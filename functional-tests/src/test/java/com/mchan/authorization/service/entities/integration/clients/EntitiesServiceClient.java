@@ -1,5 +1,7 @@
 package com.mchan.authorization.service.entities.integration.clients;
 
+import com.mchan.authorization.lib.dtos.GetProfileRequest;
+import com.mchan.authorization.lib.dtos.GetProfileResponse;
 import com.mchan.authorization.lib.dtos.PingRequest;
 import com.mchan.authorization.lib.dtos.PingResponse;
 import com.mchan.authorization.lib.dtos.SignUpRequest;
@@ -43,5 +45,16 @@ public interface EntitiesServiceClient {
      * @throws Exception .
      */
     SignUpResponse signUp(SignUpRequest request) throws Exception;
+
+    /**
+     * Gets the profile.
+     *
+     * @param reuqest .
+     *
+     * @return .
+     *
+     * @throws Exception .
+     */
+    GetProfileResponse getProfile(GetProfileRequest reuqest) throws Exception;
 
 }

@@ -1,6 +1,8 @@
 package com.mchan.authorization.service.entities.integration.clients.impl;
 
 import com.google.gson.Gson;
+import com.mchan.authorization.lib.dtos.GetProfileRequest;
+import com.mchan.authorization.lib.dtos.GetProfileResponse;
 import com.mchan.authorization.lib.dtos.PingRequest;
 import com.mchan.authorization.lib.dtos.PingResponse;
 import com.mchan.authorization.lib.dtos.SignUpRequest;
@@ -8,6 +10,7 @@ import com.mchan.authorization.lib.dtos.SignUpResponse;
 import com.mchan.authorization.service.entities.integration.clients.EntitiesServiceClient;
 import com.mchan.authorization.service.entities.integration.utils.BadRequestException;
 import com.mchan.authorization.service.entities.integration.utils.BadRequestResponse;
+import java.net.HttpURLConnection;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import retrofit2.Call;
@@ -54,6 +57,22 @@ public class RetrofitEntitiesServiceClient implements EntitiesServiceClient {
         BadRequestResponse badRequestResponse =
             gson.fromJson(response.errorBody().charStream(), BadRequestResponse.class);
         throw new BadRequestException(badRequestResponse);
+    }
+
+    @Override
+    public GetProfileResponse getProfile(GetProfileRequest reuqest) throws Exception {
+        Response<GetProfileResponse> response = retrofitEntitiesClient.getProfile(reuqest.getProfileId())
+            .execute();
+
+        if (response.body() != null) {
+            return response.body();
+        }
+
+        if (response.code() == HttpURLConnection.HTTP_NOT_FOUND) {
+            throw new ClassNotFoundException("Not Found");
+        }
+
+        throw new InternalError(response.errorBody().string());
     }
 
     private <T> T makeCall(Call<T> callMethod) throws Exception {
