@@ -38,4 +38,14 @@
         WHERE
             profile_id = #{profileId}
     </select>
+
+    <update id="editProfile" parameterType="com.mchan.authorization.service.entities.dao.entities.ProfileEntity">
+        UPDATE auth_db.profiles
+        SET
+            first_name = #{firstName},
+            last_name = #{lastName},
+            phone_number = #{phoneNumber}
+        WHERE
+            profile_id = #{profileId}
+    </update>
 </mapper>

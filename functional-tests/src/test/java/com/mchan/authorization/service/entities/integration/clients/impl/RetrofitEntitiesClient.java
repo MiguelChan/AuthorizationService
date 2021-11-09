@@ -1,5 +1,7 @@
 package com.mchan.authorization.service.entities.integration.clients.impl;
 
+import com.mchan.authorization.lib.dtos.EditProfileRequest;
+import com.mchan.authorization.lib.dtos.EditProfileResponse;
 import com.mchan.authorization.lib.dtos.GetProfileResponse;
 import com.mchan.authorization.lib.dtos.PingResponse;
 import com.mchan.authorization.lib.dtos.SignUpRequest;
@@ -8,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 /**
@@ -50,5 +53,17 @@ public interface RetrofitEntitiesClient {
      */
     @GET("auth/profile/{profileId}")
     Call<GetProfileResponse> getProfile(@Path("profileId") String profileId);
+
+    /**
+     * .
+     *
+     * @param profileId .
+     *
+     * @param request .
+     *
+     * @return .
+     */
+    @PUT("auth/profile/{profileId}")
+    Call<EditProfileResponse> editProfile(@Path("profileId") String profileId, @Body EditProfileRequest request);
 
 }

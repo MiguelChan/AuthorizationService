@@ -1,6 +1,8 @@
 package com.mchan.authorization.service.entities.integration.clients.impl;
 
 import com.google.gson.Gson;
+import com.mchan.authorization.lib.dtos.EditProfileRequest;
+import com.mchan.authorization.lib.dtos.EditProfileResponse;
 import com.mchan.authorization.lib.dtos.GetProfileRequest;
 import com.mchan.authorization.lib.dtos.GetProfileResponse;
 import com.mchan.authorization.lib.dtos.PingRequest;
@@ -73,6 +75,11 @@ public class RetrofitEntitiesServiceClient implements EntitiesServiceClient {
         }
 
         throw new InternalError(response.errorBody().string());
+    }
+
+    @Override
+    public EditProfileResponse editProfile(String profileId, EditProfileRequest request) throws Exception {
+        return makeCall(retrofitEntitiesClient.editProfile(profileId, request));
     }
 
     private <T> T makeCall(Call<T> callMethod) throws Exception {

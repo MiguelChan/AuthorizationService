@@ -1,5 +1,7 @@
 package com.mchan.authorization.service.entities.integration.clients;
 
+import com.mchan.authorization.lib.dtos.EditProfileRequest;
+import com.mchan.authorization.lib.dtos.EditProfileResponse;
 import com.mchan.authorization.lib.dtos.GetProfileRequest;
 import com.mchan.authorization.lib.dtos.GetProfileResponse;
 import com.mchan.authorization.lib.dtos.PingRequest;
@@ -57,4 +59,16 @@ public interface EntitiesServiceClient {
      */
     GetProfileResponse getProfile(GetProfileRequest reuqest) throws Exception;
 
+    /**
+     * .
+     *
+     * @param profileId .
+     *
+     * @param request .
+     *
+     * @return .
+     *
+     * @throws Exception .
+     */
+    EditProfileResponse editProfile(String profileId, EditProfileRequest request) throws Exception;
 }

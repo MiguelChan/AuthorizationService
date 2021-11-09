@@ -27,4 +27,13 @@ public interface ProfileDao {
      */
     ProfileEntity getProfile(String profileId);
 
+    /**
+     * Edits the provided profile in the DataStore.
+     *
+     * @param profileToEdit .
+     *
+     * @return .
+     */
+    boolean editProfile(ProfileEntity profileToEdit);
+
 }
