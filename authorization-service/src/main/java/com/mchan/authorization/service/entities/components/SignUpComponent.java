@@ -87,7 +87,7 @@ public class SignUpComponent {
         log.info("New Entity has been created with Id: {}", newEntity.getEntityId());
 
         // 5.- We have created everything. Now let's just return the EntityId.
-        return Optional.of(newEntity.getEntityId());
+        return Optional.of(newUserProfile.getProfileId());
     }
 
     private Entity createEntity(Profile profile) {

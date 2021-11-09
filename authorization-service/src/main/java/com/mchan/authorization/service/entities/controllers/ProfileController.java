@@ -1,5 +1,7 @@
 package com.mchan.authorization.service.entities.controllers;
 
+import com.mchan.authorization.lib.dtos.EditProfileRequest;
+import com.mchan.authorization.lib.dtos.EditProfileResponse;
 import com.mchan.authorization.lib.dtos.GetProfileResponse;
 
 /**
@@ -15,5 +17,16 @@ public interface ProfileController {
      * @return .
      */
     GetProfileResponse getProfile(String profileId);
+
+    /**
+     * Edits the provided profile.
+     *
+     * @param profileId .
+     *
+     * @param request .
+     *
+     * @return .
+     */
+    EditProfileResponse editProfile(String profileId, EditProfileRequest request);
 
 }

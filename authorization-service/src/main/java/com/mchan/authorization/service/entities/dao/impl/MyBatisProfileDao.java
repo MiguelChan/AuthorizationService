@@ -52,4 +52,10 @@ public class MyBatisProfileDao implements ProfileDao {
         return foundProfile;
     }
 
+    @Override
+    public boolean editProfile(ProfileEntity profileToEdit) {
+        profilesMapper.editProfile(profileToEdit);
+        return true;
+    }
+
 }

@@ -26,4 +26,11 @@ public interface ProfilesMapper {
      */
     ProfileEntity getProfile(String profileId);
 
+    /**
+     * .
+     *
+     * @param profileEntity .
+     */
+    void editProfile(ProfileEntity profileEntity);
+
 }

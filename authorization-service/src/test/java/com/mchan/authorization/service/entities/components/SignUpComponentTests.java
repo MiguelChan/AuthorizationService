@@ -67,7 +67,7 @@ public class SignUpComponentTests {
         Optional<String> identityIdOpt = signUpComponent.signUp(signUpRequest);
 
         assertThat(identityIdOpt.isPresent()).isTrue();
-        assertThat(identityIdOpt.get()).isEqualTo(expectedIdentityId);
+        assertThat(identityIdOpt.get()).isEqualTo(profileId);
         verify(signUpRequestValidator).validateSignUpRequest(signUpRequest);
     }
 

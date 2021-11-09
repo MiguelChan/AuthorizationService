@@ -75,4 +75,14 @@ public class MyBatisProfileDaoTests {
             .isInstanceOfAny(EntityNotFoundException.class)
             .hasMessageContaining("does not exist");
     }
+
+    @Test
+    public void editProfile_should_editTheProfile() {
+        ProfileEntity profileEntity = EnhancedRandom.random(ProfileEntity.class);
+
+        boolean editted = profilesDao.editProfile(profileEntity);
+
+        assertThat(editted).isTrue();
+        verify(profilesMapper).editProfile(profileEntity);
+    }
 }
