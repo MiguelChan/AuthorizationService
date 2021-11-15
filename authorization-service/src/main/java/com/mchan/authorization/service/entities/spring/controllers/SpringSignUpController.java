@@ -4,6 +4,7 @@ import com.mchan.authorization.lib.dtos.SignUpRequest;
 import com.mchan.authorization.lib.dtos.SignUpResponse;
 import com.mchan.authorization.service.entities.components.SignUpComponent;
 import com.mchan.authorization.service.entities.controllers.SignUpController;
+import com.mchan.authorization.service.exceptions.DuplicateEntityException;
 import com.mchan.authorization.service.exceptions.SignUpException;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;

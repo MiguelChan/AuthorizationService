@@ -17,4 +17,13 @@ public interface AccountDao {
      */
     String createBasicAccount(ClassicAccountEntity classicAccountEntity);
 
+    /**
+     * Fetches a {@link ClassicAccountEntity} using the email.
+     *
+     * @param email .
+     *
+     * @return The {@link ClassicAccountEntity} if found.
+     */
+    ClassicAccountEntity getAccountByEmail(String email);
+
 }
