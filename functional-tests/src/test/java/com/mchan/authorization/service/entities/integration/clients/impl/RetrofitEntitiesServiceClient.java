@@ -5,6 +5,8 @@ import com.mchan.authorization.lib.dtos.EditProfileRequest;
 import com.mchan.authorization.lib.dtos.EditProfileResponse;
 import com.mchan.authorization.lib.dtos.GetProfileRequest;
 import com.mchan.authorization.lib.dtos.GetProfileResponse;
+import com.mchan.authorization.lib.dtos.LogInRequest;
+import com.mchan.authorization.lib.dtos.LogInResponse;
 import com.mchan.authorization.lib.dtos.PingRequest;
 import com.mchan.authorization.lib.dtos.PingResponse;
 import com.mchan.authorization.lib.dtos.SignUpRequest;
@@ -15,6 +17,7 @@ import com.mchan.authorization.service.entities.integration.utils.BadRequestResp
 import java.net.HttpURLConnection;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.naming.AuthenticationException;
 import retrofit2.Call;
 import retrofit2.Response;
 
@@ -74,12 +77,33 @@ public class RetrofitEntitiesServiceClient implements EntitiesServiceClient {
             throw new ClassNotFoundException("Not Found");
         }
 
+        if (response.code() == HttpURLConnection.HTTP_BAD_REQUEST) {
+            BadRequestResponse badRequestResponse =
+                gson.fromJson(response.errorBody().charStream(), BadRequestResponse.class);
+            throw new BadRequestException(badRequestResponse);
+        }
+
         throw new InternalError(response.errorBody().string());
     }
 
     @Override
     public EditProfileResponse editProfile(String profileId, EditProfileRequest request) throws Exception {
         return makeCall(retrofitEntitiesClient.editProfile(profileId, request));
+    }
+
+    @Override
+    public LogInResponse logIn(LogInRequest logInRequest) throws Exception {
+        Response<LogInResponse> response = retrofitEntitiesClient.logIn(logInRequest).execute();
+
+        if (response.body() != null && response.isSuccessful()) {
+            return response.body();
+        }
+
+        if (response.code() == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            throw new AuthenticationException("NotAuthorized");
+        }
+
+        throw new InternalError(response.errorBody().string());
     }
 
     private <T> T makeCall(Call<T> callMethod) throws Exception {

@@ -13,19 +13,6 @@ import org.testng.annotations.Test;
 @Test
 public class GetProfileTests extends BaseTests {
 
-    private static final String TEST_PROFILE_ID = "pr4E154B2F6A074DED8B";
-
-    @Test
-    public void getProfile_should_returnTheProfile() throws Exception {
-        GetProfileRequest request = GetProfileRequest.builder()
-            .profileId(TEST_PROFILE_ID)
-            .build();
-
-        GetProfileResponse response = serviceClient.getProfile(request);
-
-        assertNotNull(response.getProfile());
-    }
-
     @Test(expectedExceptions = ClassNotFoundException.class)
     public void getProfile_should_throw404_when_profileDoesNotExist() throws Exception {
         GetProfileRequest request = GetProfileRequest.builder()

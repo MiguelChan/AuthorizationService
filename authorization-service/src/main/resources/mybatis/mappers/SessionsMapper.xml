@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mchan.authorization.service.entities.dao.mappers.SessionsMapper">
+    <resultMap id="Profile" type="com.mchan.authorization.service.entities.dao.entities.SessionEntity">
+        <id property="sessionId" column="session_id" />
+        <result property="accountId" column="account_id" />
+        <result property="sessionType" column="session_type" />
+        <result property="sessionTime" column="session_time" />
+    </resultMap>
+
+    <insert id="createSession" parameterType="com.mchan.authorization.service.entities.dao.entities.SessionEntity">
+        INSERT INTO auth_db.sessions (
+            account_id,
+            session_type,
+            session_time
+        ) VALUES (
+            #{accountId},
+            #{sessionType},
+            #{sessionTime}
+        );
+    </insert>
+</mapper>

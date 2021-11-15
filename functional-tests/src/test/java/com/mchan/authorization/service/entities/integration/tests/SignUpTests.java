@@ -7,6 +7,7 @@ import com.mchan.authorization.lib.dtos.SignUpRequest;
 import com.mchan.authorization.lib.dtos.SignUpResponse;
 import com.mchan.authorization.service.entities.integration.utils.BadRequestException;
 import io.github.benas.randombeans.api.EnhancedRandom;
+import java.util.UUID;
 import org.testng.annotations.Test;
 
 /**
@@ -25,7 +26,7 @@ public class SignUpTests extends BaseTests {
         );
 
         String securePassword = "ThisPassword.Be123!";
-        String randomEmail = "somesome@some.com";
+        String randomEmail = UUID.randomUUID() + "@some.com";
         String randomNumber = "1234567890";
 
         request.setEmailAddress(randomEmail);

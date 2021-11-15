@@ -3,6 +3,7 @@ package com.mchan.authorization.service.entities.dao.impl;
 import com.mchan.authorization.service.entities.dao.AccountDao;
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
 import com.mchan.authorization.service.entities.dao.mappers.AccountsMapper;
+import com.mchan.authorization.service.entities.utils.MyBatisExceptionsTranslator;
 import com.mchan.authorization.service.entities.utils.RandomIdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ public class MyBatisAccountDao implements AccountDao {
 
     private final RandomIdGenerator randomIdGenerator;
     private final AccountsMapper accountsMapper;
+    private final MyBatisExceptionsTranslator exceptionsTranslator;
 
     /**
      * .
@@ -27,9 +29,11 @@ public class MyBatisAccountDao implements AccountDao {
      */
     @Autowired
     public MyBatisAccountDao(RandomIdGenerator randomIdGenerator,
-                             AccountsMapper accountsMapper) {
+                             AccountsMapper accountsMapper,
+                             MyBatisExceptionsTranslator myBatisExceptionsTranslator) {
         this.randomIdGenerator = randomIdGenerator;
         this.accountsMapper = accountsMapper;
+        this.exceptionsTranslator = myBatisExceptionsTranslator;
     }
 
     @Override
@@ -40,8 +44,18 @@ public class MyBatisAccountDao implements AccountDao {
             .accountId(newAccountId)
             .build();
 
-        accountsMapper.createBasicAccount(entityToCreate);
+        try {
+            accountsMapper.createBasicAccount(entityToCreate);
+        } catch (Exception e) {
+            throw exceptionsTranslator.getException(e);
+        }
 
         return newAccountId;
     }
+
+    @Override
+    public ClassicAccountEntity getAccountByEmail(String email) {
+        return accountsMapper.getAccountByEmail(email);
+    }
+
 }

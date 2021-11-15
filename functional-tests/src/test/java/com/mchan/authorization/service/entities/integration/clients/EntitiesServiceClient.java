@@ -4,6 +4,8 @@ import com.mchan.authorization.lib.dtos.EditProfileRequest;
 import com.mchan.authorization.lib.dtos.EditProfileResponse;
 import com.mchan.authorization.lib.dtos.GetProfileRequest;
 import com.mchan.authorization.lib.dtos.GetProfileResponse;
+import com.mchan.authorization.lib.dtos.LogInRequest;
+import com.mchan.authorization.lib.dtos.LogInResponse;
 import com.mchan.authorization.lib.dtos.PingRequest;
 import com.mchan.authorization.lib.dtos.PingResponse;
 import com.mchan.authorization.lib.dtos.SignUpRequest;
@@ -71,4 +73,13 @@ public interface EntitiesServiceClient {
      * @throws Exception .
      */
     EditProfileResponse editProfile(String profileId, EditProfileRequest request) throws Exception;
+
+    /**
+     * .
+     *
+     * @param logInRequest .
+     *
+     * @throws Exception .
+     */
+    LogInResponse logIn(LogInRequest logInRequest) throws Exception;
 }

@@ -26,4 +26,17 @@
             #{password}
         )
     </insert>
+
+    <select id="getAccountByEmail" resultMap="ClassicAccount">
+        SELECT
+            account_id,
+            profile_id,
+            account_type,
+            email,
+            password
+        FROM auth_db.accounts
+        WHERE
+            email = #{email}
+    </select>
+
 </mapper>
