@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mchan.authorization.service.authorization.dao.mappers.ApplicationsMapper">
+    <resultMap id="ApplicationEntity" type="com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity">
+        <id property="applicationId" column="application_id" />
+        <result property="profileId" column="profile_id" />
+        <result property="appName" column="app_name" />
+        <result property="appIcon" column="app_icon" />
+        <result property="appHomePage" column="app_home_page" />
+        <result property="shortDescription" column="short_description" />
+        <result property="redirectUrl" column="redirectUrl" />
+    </resultMap>
+
+    <insert id="createApplication" parameterType="com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity">
+        INSERT INTO auth_db.applications (
+            profile_id,
+            app_name,
+            app_icon,
+            app_home_page,
+            short_description,
+            redirect_url
+        ) VALUES (
+            #{profileId},
+            #{appName},
+            #{appIcon},
+            #{appHomePage},
+            #{shortDescription},
+            #{redirectUrl}
+        );
+    </insert>
+</mapper>
