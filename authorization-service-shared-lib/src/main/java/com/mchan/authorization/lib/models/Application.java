@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder
+@Builder(toBuilder = true)
 public class Application {
     private int applicationId;
     private String appName;
@@ -20,4 +20,5 @@ public class Application {
     private String appHomePage;
     private String shortDescription;
     private String redirectUrl;
+    private boolean isActive;
 }

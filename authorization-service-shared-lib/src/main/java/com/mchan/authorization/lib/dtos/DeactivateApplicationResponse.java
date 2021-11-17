@@ -7,27 +7,26 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * A Response used when an {@link com.mchan.authorization.lib.models.Application} gets created.
+ * .
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @EqualsAndHashCode(callSuper = true)
-public class CreateApplicationResponse extends BaseResponse {
+public class DeactivateApplicationResponse extends BaseResponse {
 
-    private int applicationId;
+    private boolean success;
 
     /**
      * .
      *
      * @param message .
      *
-     * @param applicationId .
+     * @param success .
      */
-    @Builder
-    public CreateApplicationResponse(String message, int applicationId) {
+    @Builder(toBuilder = true)
+    public DeactivateApplicationResponse(String message, boolean success) {
         super(message);
-        this.applicationId = applicationId;
+        this.success = success;
     }
-
 }

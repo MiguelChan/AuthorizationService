@@ -1,0 +1,1 @@
+alter table auth_db.applications add column is_active boolean not null;

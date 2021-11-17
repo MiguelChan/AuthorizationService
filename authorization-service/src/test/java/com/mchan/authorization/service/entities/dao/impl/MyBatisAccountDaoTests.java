@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
 import com.mchan.authorization.service.entities.dao.mappers.AccountsMapper;
-import com.mchan.authorization.service.entities.utils.MyBatisExceptionsTranslator;
 import com.mchan.authorization.service.entities.utils.RandomIdGenerator;
 import com.mchan.authorization.service.exceptions.DatabaseException;
+import com.mchan.authorization.service.utils.MyBatisExceptionsTranslator;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

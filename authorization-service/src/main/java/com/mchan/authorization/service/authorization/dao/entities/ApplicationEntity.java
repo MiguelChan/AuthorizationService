@@ -20,4 +20,5 @@ public class ApplicationEntity {
     private String appHomePage;
     private String shortDescription;
     private String redirectUrl;
+    private boolean isActive;
 }

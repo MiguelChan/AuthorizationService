@@ -16,4 +16,29 @@ public interface ApplicationsMapper {
      */
     void createApplication(ApplicationEntity applicationEntity);
 
+    /**
+     * .
+     *
+     * @param applicationId .
+     */
+    int deactivateApplication(int applicationId);
+
+    /**
+     * .
+     *
+     * @param applicationId .
+     *
+     * @return .
+     */
+    ApplicationEntity getApplication(int applicationId);
+
+    /**
+     * .
+     *
+     * @param application .
+     *
+     * @return .
+     */
+    int updateApplication(ApplicationEntity application);
+
 }

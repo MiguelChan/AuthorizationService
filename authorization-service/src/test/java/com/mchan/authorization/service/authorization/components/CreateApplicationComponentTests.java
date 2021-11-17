@@ -1,5 +1,6 @@
 package com.mchan.authorization.service.authorization.components;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -53,6 +54,7 @@ public class CreateApplicationComponentTests {
     @Test
     public void createApplication_should_createTheApplication() {
         String profileId = "AProfileId";
+        final int expectedAppId = 12345;
 
         ProfileEntity profileEntity = EnhancedRandom.random(ProfileEntity.class, "profileId");
         profileEntity.setProfileId(profileId);
@@ -66,12 +68,13 @@ public class CreateApplicationComponentTests {
         ApplicationEntity expectedAppToCreate = applicationEntity.toBuilder()
             .profileId(profileId)
             .build();
-
+        when(applicationDao.createApplication(expectedAppToCreate)).thenReturn(expectedAppId);
         when(profileDao.getProfile(profileId)).thenReturn(profileEntity);
 
-        component.createApplication(request);
+        int createdAppId = component.createApplication(request);
 
         verify(applicationDao).createApplication(expectedAppToCreate);
+        assertThat(createdAppId).isEqualTo(expectedAppId);
     }
 
 }

@@ -25,6 +25,7 @@ public class ApplicationMapper {
             .appHomePage(application.getAppHomePage())
             .shortDescription(application.getShortDescription())
             .redirectUrl(application.getRedirectUrl())
+            .isActive(application.isActive())
             .build();
     }
 

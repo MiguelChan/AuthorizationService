@@ -10,24 +10,67 @@
         <result property="appIcon" column="app_icon" />
         <result property="appHomePage" column="app_home_page" />
         <result property="shortDescription" column="short_description" />
-        <result property="redirectUrl" column="redirectUrl" />
+        <result property="redirectUrl" column="redirect_url" />
+        <result property="isActive" column="is_active" />
     </resultMap>
 
-    <insert id="createApplication" parameterType="com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity">
+    <insert
+        id="createApplication"
+        parameterType="com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity"
+        keyColumn="application_id"
+        keyProperty="applicationId"
+        useGeneratedKeys="true"
+    >
         INSERT INTO auth_db.applications (
             profile_id,
             app_name,
             app_icon,
             app_home_page,
             short_description,
-            redirect_url
+            redirect_url,
+            is_active
         ) VALUES (
             #{profileId},
             #{appName},
             #{appIcon},
             #{appHomePage},
             #{shortDescription},
-            #{redirectUrl}
+            #{redirectUrl},
+            true
         );
     </insert>
+
+    <update id="deactivateApplication">
+        UPDATE auth_db.applications
+        SET is_active = false
+        WHERE
+            application_id = #{applicationId}
+    </update>
+
+    <select id="getApplication" resultMap="ApplicationEntity">
+        SELECT
+            application_id,
+            profile_id,
+            app_name,
+            app_icon,
+            app_home_page,
+            short_description,
+            redirect_url,
+            is_active
+        FROM auth_db.applications
+        WHERE
+            application_id = #{applicationId}
+    </select>
+
+    <update id="updateApplication" parameterType="com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity">
+        UPDATE auth_db.applications
+        SET
+            app_name = #{appName},
+            app_icon = #{appIcon},
+            app_home_page = #{appHomePage},
+            short_description = #{shortDescription},
+            redirect_url = #{redirectUrl}
+        WHERE
+            application_id = #{applicationId}
+    </update>
 </mapper>
