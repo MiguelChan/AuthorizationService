@@ -1,4 +1,4 @@
-package com.mchan.authorization.service.entities.utils;
+package com.mchan.authorization.service.utils;
 
 import com.mchan.authorization.service.exceptions.DatabaseException;
 import com.mchan.authorization.service.exceptions.DuplicateEntityException;

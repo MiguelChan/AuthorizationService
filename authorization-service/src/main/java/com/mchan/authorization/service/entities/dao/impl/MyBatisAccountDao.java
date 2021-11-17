@@ -3,8 +3,8 @@ package com.mchan.authorization.service.entities.dao.impl;
 import com.mchan.authorization.service.entities.dao.AccountDao;
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
 import com.mchan.authorization.service.entities.dao.mappers.AccountsMapper;
-import com.mchan.authorization.service.entities.utils.MyBatisExceptionsTranslator;
 import com.mchan.authorization.service.entities.utils.RandomIdGenerator;
+import com.mchan.authorization.service.utils.MyBatisExceptionsTranslator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

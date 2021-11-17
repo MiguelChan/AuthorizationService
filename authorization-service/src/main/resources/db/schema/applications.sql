@@ -6,5 +6,6 @@ create table auth_db.applications (
     app_home_page varchar default null,
     short_description varchar not null,
     redirect_url varchar not null,
+    is_active boolean not null,
     constraint fk_profile foreign key (profile_id) references auth_db.profiles(profile_id)
 );

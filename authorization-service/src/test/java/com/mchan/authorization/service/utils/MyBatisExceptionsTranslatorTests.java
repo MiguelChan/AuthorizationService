@@ -1,10 +1,11 @@
-package com.mchan.authorization.service.entities.utils;
+package com.mchan.authorization.service.utils;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.mchan.authorization.service.exceptions.DatabaseException;
 import com.mchan.authorization.service.exceptions.DuplicateEntityException;
+import com.mchan.authorization.service.utils.MyBatisExceptionsTranslator;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

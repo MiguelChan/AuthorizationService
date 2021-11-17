@@ -46,7 +46,7 @@ public class CreateApplicationComponent {
      *
      * @param request .
      */
-    public void createApplication(CreateApplicationRequest request) {
+    public int createApplication(CreateApplicationRequest request) {
         String profileId = request.getProfileId();
         Application application = request.getApplication();
 
@@ -56,7 +56,7 @@ public class CreateApplicationComponent {
             .profileId(profileEntity.getProfileId())
             .build();
 
-        applicationDao.createApplication(appToStore);
+        return applicationDao.createApplication(appToStore);
     }
 
     private ProfileEntity getProfile(String profileId) {

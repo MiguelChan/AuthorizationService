@@ -1,17 +1,19 @@
 package com.mchan.authorization.lib.dtos;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Base response that includes a message in case somethings goes wrong.
+ * .
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class BaseResponse {
+@Builder(toBuilder = true)
+public class DeactivateApplicationRequest {
 
-    protected String message;
+    private int applicationId;
 
 }
