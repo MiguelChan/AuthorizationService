@@ -1,5 +1,6 @@
 package com.mchan.authorization.service.entities.authentication.strategies;
 
+import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.entities.authentication.models.AuthenticationRequest;
 
 /**
@@ -15,7 +16,9 @@ public interface AuthenticationStrategy {
      *                     Implementations of the {@link AuthenticationStrategy} should also create
      *                     a new type of {@link AuthenticationRequest} that will be the one consumed
      *                     by the Strategy.
+     *
+     * @return The associated Profile with the User.
      */
-    void authenticateUser(AuthenticationRequest authRequest);
+    Profile authenticateUser(AuthenticationRequest authRequest);
 
 }

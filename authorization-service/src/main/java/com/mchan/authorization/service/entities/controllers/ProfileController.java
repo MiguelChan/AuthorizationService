@@ -11,22 +11,21 @@ public interface ProfileController {
 
     /**
      * The request for retrieving a {@link com.mchan.authorization.lib.models.Profile}.
-     *
-     * @param profileId .
+     * The controller will just return the current active profile from the Authenticated User.
+     * If no user is authenticated thehn this method won't get reached.
      *
      * @return .
      */
-    GetProfileResponse getProfile(String profileId);
+    GetProfileResponse getProfile();
 
     /**
-     * Edits the provided profile.
-     *
-     * @param profileId .
+     * Edits the current active profile.
+     * The authenticated user's profile is the one that is going to be edited.
      *
      * @param request .
      *
      * @return .
      */
-    EditProfileResponse editProfile(String profileId, EditProfileRequest request);
+    EditProfileResponse editProfile(EditProfileRequest request);
 
 }
