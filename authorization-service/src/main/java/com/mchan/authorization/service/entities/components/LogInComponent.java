@@ -2,6 +2,7 @@ package com.mchan.authorization.service.entities.components;
 
 import com.mchan.authorization.lib.dtos.LogInRequest;
 import com.mchan.authorization.lib.models.AuthenticationType;
+import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.entities.authentication.factories.AuthenticationRequestFactory;
 import com.mchan.authorization.service.entities.authentication.factories.AuthenticationStrategyFactory;
 import com.mchan.authorization.service.entities.authentication.models.AuthenticationRequest;
@@ -37,15 +38,13 @@ public class LogInComponent {
      *
      * @return .
      */
-    public boolean logIn(LogInRequest request) {
+    public Profile logIn(LogInRequest request) {
         AuthenticationType authType = request.getAuthType();
 
         AuthenticationRequest authRequest = authRequestBuilder.getAuthRequest(request);
         AuthenticationStrategy authStrategy = authStrategyFactory.getAuthStrategy(authType);
 
-        authStrategy.authenticateUser(authRequest);
-
-        return true;
+        return authStrategy.authenticateUser(authRequest);
     }
 
 }

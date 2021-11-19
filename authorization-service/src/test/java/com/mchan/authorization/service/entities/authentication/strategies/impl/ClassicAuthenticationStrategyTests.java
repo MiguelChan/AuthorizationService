@@ -1,11 +1,14 @@
 package com.mchan.authorization.service.entities.authentication.strategies.impl;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.entities.authentication.models.AuthenticationRequest;
 import com.mchan.authorization.service.entities.authentication.models.ClassicAuthenticationRequest;
+import com.mchan.authorization.service.entities.components.GetProfileComponent;
 import com.mchan.authorization.service.entities.dao.AccountDao;
 import com.mchan.authorization.service.entities.dao.SessionsDao;
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
@@ -38,6 +41,8 @@ public class ClassicAuthenticationStrategyTests {
     private DateProvider dateProvider;
     @Mock
     private SessionsDao sessionsDao;
+    @Mock
+    private GetProfileComponent getProfileComponent;
 
     private ClassicAuthenticationStrategy strategy;
 
@@ -49,6 +54,7 @@ public class ClassicAuthenticationStrategyTests {
         strategy = new ClassicAuthenticationStrategy(
             accountDao,
             sessionsDao,
+            getProfileComponent,
             dateProvider,
             securePasswordUtils);
     }
@@ -57,19 +63,23 @@ public class ClassicAuthenticationStrategyTests {
     public void authenticateUser_should_authenticateTheUser() throws Exception {
         ClassicAuthenticationRequest request = EnhancedRandom.random(ClassicAuthenticationRequest.class);
         ClassicAccountEntity expectedAccountEntity = EnhancedRandom.random(ClassicAccountEntity.class);
+        Profile expectedProfile = EnhancedRandom.random(Profile.class);
 
         when(dateProvider.now()).thenReturn(TEST_INSTANT);
         when(accountDao.getAccountByEmail(request.getUsername())).thenReturn(expectedAccountEntity);
         when(securePasswordUtils.isValidPassword(request.getPassword(), expectedAccountEntity.getPassword())).thenReturn(true);
+        when(getProfileComponent.getProfile(expectedAccountEntity.getProfileId())).thenReturn(expectedProfile);
 
-        strategy.authenticateUser(request);
+        Profile foundProfile = strategy.authenticateUser(request);
 
         SessionEntity expectedSession = SessionEntity.builder()
             .accountId(expectedAccountEntity.getAccountId())
             .sessionType(expectedAccountEntity.getAccountType())
             .sessionTime(TEST_INSTANT)
             .build();
+
         verify(sessionsDao).createSession(expectedSession);
+        assertThat(foundProfile).isEqualTo(expectedProfile);
     }
 
     @Test

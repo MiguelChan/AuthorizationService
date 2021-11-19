@@ -2,10 +2,10 @@ package com.mchan.authorization.service.entities.components;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mchan.authorization.lib.dtos.LogInRequest;
+import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.entities.authentication.factories.AuthenticationRequestFactory;
 import com.mchan.authorization.service.entities.authentication.factories.AuthenticationStrategyFactory;
 import com.mchan.authorization.service.entities.authentication.models.AuthenticationRequest;
@@ -41,16 +41,17 @@ public class LogInComponentTests {
     @Test
     public void logIn_should_logTheUserIn() {
         LogInRequest logInRequest = EnhancedRandom.random(LogInRequest.class);
+        Profile expectedProfile = EnhancedRandom.random(Profile.class);
         AuthenticationRequest expectedAuthRequest = new AuthenticationRequest() {};
         AuthenticationStrategy authenticationStrategy = mock(AuthenticationStrategy.class);
 
         when(authRequestFactory.getAuthRequest(logInRequest)).thenReturn(expectedAuthRequest);
         when(authStrategyFactory.getAuthStrategy(logInRequest.getAuthType())).thenReturn(authenticationStrategy);
+        when(authenticationStrategy.authenticateUser(expectedAuthRequest)).thenReturn(expectedProfile);
 
-        boolean isLoggedIn = component.logIn(logInRequest);
+        Profile profile = component.logIn(logInRequest);
 
-        assertThat(isLoggedIn).isTrue();
-        verify(authenticationStrategy).authenticateUser(expectedAuthRequest);
+        assertThat(profile).isEqualTo(expectedProfile);
     }
 
 }

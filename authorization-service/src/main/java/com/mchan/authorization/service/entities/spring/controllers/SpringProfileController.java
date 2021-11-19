@@ -7,12 +7,13 @@ import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.entities.components.EditProfileComponent;
 import com.mchan.authorization.service.entities.components.GetProfileComponent;
 import com.mchan.authorization.service.entities.controllers.ProfileController;
+import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
+import com.mchan.authorization.service.spring.security.EntitiesAuthenticationToken;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +29,8 @@ public class SpringProfileController implements ProfileController {
     private final GetProfileComponent getProfileComponent;
     private final EditProfileComponent editProfileComponent;
 
+    private final AuthenticationFacade authenticationFacade;
+
     /**
      * .
      *
@@ -35,21 +38,24 @@ public class SpringProfileController implements ProfileController {
      */
     @Autowired
     public SpringProfileController(GetProfileComponent getProfileComponent,
-                                   EditProfileComponent editProfileComponent) {
+                                   EditProfileComponent editProfileComponent,
+                                   AuthenticationFacade authenticationFacade) {
         this.getProfileComponent = getProfileComponent;
         this.editProfileComponent = editProfileComponent;
+        this.authenticationFacade = authenticationFacade;
     }
 
     /**
      * .
      *
-     * @param profileId .
-     *
      * @return .
      */
-    @GetMapping(value = "/auth/profile/{profileId}", produces = "application/json")
-    @Override
-    public GetProfileResponse getProfile(@PathVariable("profileId") String profileId) {
+    @GetMapping(value = "/profile", produces = "application/json")
+    public GetProfileResponse getProfile() {
+        log.info("Attempting to retrieve profile.");
+        EntitiesAuthenticationToken authToken = authenticationFacade.getAuthenticationToken();
+        Profile currentProfile = authToken.getProfile();
+        String profileId = currentProfile.getProfileId();
         try {
             Profile profile = getProfileComponent.getProfile(profileId);
             return GetProfileResponse.builder()
@@ -70,14 +76,11 @@ public class SpringProfileController implements ProfileController {
      *
      * @return .
      */
-    @PutMapping(
-        value = "/auth/profile/{profileId}",
-        produces = "application/json",
-        consumes = "application/json"
-    )
+    @PutMapping(value = "/auth/profile", produces = "application/json", consumes = "application/json")
     @Override
-    public EditProfileResponse editProfile(@PathVariable("profileId") String profileId,
-                                           @RequestBody EditProfileRequest request) {
+    public EditProfileResponse editProfile(@RequestBody EditProfileRequest request) {
+        Profile currentProfile = authenticationFacade.getAuthenticationToken().getProfile();
+        String profileId = currentProfile.getProfileId();
         try {
             boolean success = editProfileComponent.editProfile(profileId, request);
             return EditProfileResponse.builder()

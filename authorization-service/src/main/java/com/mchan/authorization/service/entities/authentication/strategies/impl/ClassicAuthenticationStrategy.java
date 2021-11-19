@@ -1,8 +1,10 @@
 package com.mchan.authorization.service.entities.authentication.strategies.impl;
 
+import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.entities.authentication.models.AuthenticationRequest;
 import com.mchan.authorization.service.entities.authentication.models.ClassicAuthenticationRequest;
 import com.mchan.authorization.service.entities.authentication.strategies.AuthenticationStrategy;
+import com.mchan.authorization.service.entities.components.GetProfileComponent;
 import com.mchan.authorization.service.entities.dao.AccountDao;
 import com.mchan.authorization.service.entities.dao.SessionsDao;
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
@@ -26,6 +28,7 @@ public class ClassicAuthenticationStrategy implements AuthenticationStrategy {
     private final AccountDao accountDao;
     private final SessionsDao sessionsDao;
     private final DateProvider dateProvider;
+    private final GetProfileComponent getProfileComponent;
     private final SecurePasswordUtils securePasswordUtils;
 
     /**
@@ -42,16 +45,18 @@ public class ClassicAuthenticationStrategy implements AuthenticationStrategy {
     @Autowired
     public ClassicAuthenticationStrategy(AccountDao accountDao,
                                          SessionsDao sessionsDao,
+                                         GetProfileComponent getProfileComponent,
                                          DateProvider dateProvider,
                                          SecurePasswordUtils securePasswordUtils) {
         this.accountDao = accountDao;
         this.securePasswordUtils = securePasswordUtils;
         this.sessionsDao = sessionsDao;
         this.dateProvider = dateProvider;
+        this.getProfileComponent = getProfileComponent;
     }
 
     @Override
-    public void authenticateUser(AuthenticationRequest authRequest) {
+    public Profile authenticateUser(AuthenticationRequest authRequest) {
         ClassicAuthenticationRequest request = getRequest(authRequest);
         String username = request.getUsername();
         String password = request.getPassword();
@@ -75,6 +80,8 @@ public class ClassicAuthenticationStrategy implements AuthenticationStrategy {
         }
 
         createSession(accountEntity);
+
+        return getProfileComponent.getProfile(accountEntity.getProfileId());
     }
 
     private void createSession(ClassicAccountEntity classicAccountEntity) {
