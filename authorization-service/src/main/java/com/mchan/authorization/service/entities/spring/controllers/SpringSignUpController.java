@@ -4,7 +4,6 @@ import com.mchan.authorization.lib.dtos.SignUpRequest;
 import com.mchan.authorization.lib.dtos.SignUpResponse;
 import com.mchan.authorization.service.entities.components.SignUpComponent;
 import com.mchan.authorization.service.entities.controllers.SignUpController;
-import com.mchan.authorization.service.exceptions.DuplicateEntityException;
 import com.mchan.authorization.service.exceptions.SignUpException;
 import java.util.Optional;
 import lombok.extern.log4j.Log4j2;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * The sign up controller. Used to register new Users into our System.
+ * The sign-up controller. Used to register new Users into our System.
  */
 @Log4j2
 @RequestMapping(value = "/", produces = "application/json")

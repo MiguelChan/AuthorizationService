@@ -10,6 +10,8 @@ import com.mchan.authorization.service.entities.controllers.ProfileController;
 import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.spring.security.EntitiesAuthenticationToken;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.Authorization;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,9 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * The rest controller for the {@link com.mchan.authorization.service.entities.controllers.ProfileController}.
  */
+@Api(
+    authorizations = @Authorization("basic")
+)
 @Log4j2
 @RestController("/")
 public class SpringProfileController implements ProfileController {
