@@ -23,7 +23,7 @@ public class SpringHealthController implements HealthController {
         this.healthDao = healthDao;
     }
 
-    @GetMapping("/ping")
+    @GetMapping(value = "/ping", produces = "application/json")
     @Override
     public PingResponse ping(PingRequest request) {
         return PingResponse.builder()
@@ -31,7 +31,7 @@ public class SpringHealthController implements HealthController {
             .build();
     }
 
-    @GetMapping("/deep_ping")
+    @GetMapping(value = "/deep_ping", produces = "application/json")
     @Override
     public PingResponse deepPing(PingRequest request) {
         boolean isHealthy = healthDao.isHealthy();

@@ -57,11 +57,20 @@ public class BasicAuthenticationWorkflowTests extends BaseTests {
         testContext.setAttribute(KEY_USERNAME, randomEmail);
     }
 
-    @Test(dependsOnMethods = "signUp_should_signTheUserUp")
-    public void getProfile_should_returnTheProvidedProfile(ITestContext testContext) throws Exception {
-        String profileId = (String) testContext.getAttribute(KEY_PROFILE_ID);
-        Profile profile = getProfile(profileId);
-        testContext.setAttribute(KEY_RAW_PROFILE, profile);
+    @Test
+    public void logIn_should_logTheUserIn(ITestContext testContext) throws Exception {
+        String username = "carlos@carlosmarx.com";
+        LogInRequest logInRequest = LogInRequest.builder()
+            .password("ThisPassword.Be123!")
+            .userName(username)
+            .build();
+
+        serviceClient.logIn(logInRequest);
+    }
+
+    @Test(expectedExceptions = AuthenticationException.class)
+    public void getProfile_should_throwUnauthorizedException_when_userIsNotLoggedIn() throws Exception {
+        serviceClient.getProfile(GetProfileRequest.builder().build());
     }
 
     @Test(dependsOnMethods = "getProfile_should_returnTheProvidedProfile")
@@ -75,7 +84,8 @@ public class BasicAuthenticationWorkflowTests extends BaseTests {
             .lastName(expectedNewLastName)
             .build();
 
-        EditProfileResponse response = this.serviceClient.editProfile(nonEditedProfile.getProfileId(), request);
+        EditProfileResponse
+            response = this.serviceClient.editProfile(nonEditedProfile.getProfileId(), request);
 
         assertTrue(response.isSuccess());
 

@@ -58,7 +58,7 @@ public class EntitiesAuthenticationProvider implements AuthenticationProvider {
         try {
             foundProfile = logInComponent.logIn(logInRequest);
         } catch (Exception e) {
-            log.error("There was an error while trying to Authenticated", e);
+            log.error("There was an error while trying to Authenticate.", e);
             throw new AuthenticationServiceException(e.getMessage(), e);
         }
 

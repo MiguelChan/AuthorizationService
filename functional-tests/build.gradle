@@ -1,6 +1,36 @@
+buildscript {
+    dependencies {
+        classpath('io.swagger:swagger-codegen:2.4.23')
+    }
+}
+
 plugins {
     id 'java'
     id 'checkstyle'
+}
+
+import io.swagger.codegen.config.CodegenConfigurator;
+import io.swagger.codegen.DefaultGenerator;
+
+def swaggerSourceFile = 'src/test/resources/auth-service.json';
+def swaggerTargetFolder = 'src/generated/java';
+
+configurations {
+    generatedCompile
+}
+
+sourceSets {
+    generated {
+        compileClasspath = configurations.generatedCompile
+    }
+    main {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
+    test {
+        compileClasspath += generated.output
+        runtimeClasspath += generated.output
+    }
 }
 
 group 'com.mchan'
@@ -11,13 +41,29 @@ repositories {
     mavenCentral()
 }
 
+def swaggerVersion =
+
 dependencies {
     testImplementation project(':authorization-service-shared-lib')
     testImplementation 'com.google.inject:guice:5.0.1'
     testImplementation 'org.testng:testng:7.4.0'
     testImplementation 'com.squareup.retrofit2:retrofit:2.7.2'
     testImplementation 'com.squareup.retrofit2:converter-gson:2.7.2'
+    testImplementation 'com.squareup.retrofit2:converter-scalars:2.7.2'
     testImplementation 'io.github.benas:random-beans:3.7.0'
+    testImplementation 'io.gsonfire:gson-fire:1.8.3'
+    testImplementation 'org.threeten:threetenbp:1.4.1'
+    testImplementation 'org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.1'
+
+    generatedCompile 'io.swagger:swagger-annotations:1.5.24'
+    generatedCompile 'com.squareup.retrofit2:converter-gson:2.7.2'
+    generatedCompile 'com.squareup.retrofit2:retrofit:2.7.2'
+    generatedCompile 'com.squareup.retrofit2:converter-scalars:2.7.2'
+    generatedCompile 'org.apache.oltu.oauth2:org.apache.oltu.oauth2.client:1.0.1'
+    generatedCompile 'io.gsonfire:gson-fire:1.8.3'
+    generatedCompile 'org.threeten:threetenbp:1.4.1'
+    generatedCompile 'javax.validation:validation-api:2.0.0.Final'
+    generatedCompile 'javax.annotation:javax.annotation-api:1.3.2'
 }
 
 test {
@@ -36,6 +82,10 @@ checkstyle {
     maxWarnings = 0
 }
 
+tasks.withType(Checkstyle) {
+    exclude '**/com/mchan/authorization/service/client**'
+}
+
 tasks.register('checkstyle') {
     dependsOn tasks.checkstyleMain
     dependsOn tasks.checkstyleTest
@@ -48,3 +98,30 @@ tasks.register('release') {
     dependsOn tasks.build
     dependsOn tasks.test
 }
+
+task generateApi {
+    inputs.file("$projectDir/$swaggerSourceFile")
+    outputs.dir("$projectDir/$swaggerTargetFolder")
+    doLast {
+        def config = new CodegenConfigurator();
+        config.setInputSpec("file://$projectDir/$swaggerSourceFile");
+        config.setOutputDir("$projectDir");
+        config.setLang("java")
+        config.setLibrary("retrofit2");
+        config.setAdditionalProperties([
+                'interfaceOnly' : 'true',
+                'apiPackage'    : 'com.mchan.authorization.service.client.api',
+                'modelPackage'  : 'com.mchan.authorization.service.client.model',
+                'sourceFolder'  : swaggerTargetFolder
+        ]);
+        new DefaultGenerator().opts(config.toClientOptInput()).generate();
+    }
+}
+
+clean.doFirst {
+    delete("${projectDir}/$swaggerTargetFolder");
+}
+
+compileGeneratedJava.dependsOn generateApi
+classes.dependsOn generatedClasses
+compileJava.dependsOn compileGeneratedJava
