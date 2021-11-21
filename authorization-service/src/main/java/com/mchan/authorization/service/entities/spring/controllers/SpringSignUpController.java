@@ -19,7 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
  * The sign-up controller. Used to register new Users into our System.
  */
 @Log4j2
-@RequestMapping(value = "/", produces = "application/json")
+@RequestMapping(value = "/api", produces = "application/json")
 @RestController
 public class SpringSignUpController implements SignUpController {
 

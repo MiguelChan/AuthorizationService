@@ -26,7 +26,7 @@ public class ClientModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        ApiClient apiClient = new ApiClient("basic");
+        ApiClient apiClient = new ApiClient();
 
         bind(ApiClient.class).toInstance(apiClient);
 

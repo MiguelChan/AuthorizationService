@@ -27,7 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
  * .
  */
 @RestController
-@RequestMapping("/")
+@RequestMapping("/api")
 public class SpringApplicationsController implements ApplicationsController {
 
     private final CreateApplicationComponent createApplicationComponent;

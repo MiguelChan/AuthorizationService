@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,7 +29,8 @@ import org.springframework.web.server.ResponseStatusException;
     authorizations = @Authorization("basic")
 )
 @Log4j2
-@RestController("/")
+@RestController
+@RequestMapping(value = "/api", produces = "application/json")
 public class SpringProfileController implements ProfileController {
 
     private final GetProfileComponent getProfileComponent;
@@ -55,7 +57,7 @@ public class SpringProfileController implements ProfileController {
      *
      * @return .
      */
-    @GetMapping(value = "/profile", produces = "application/json")
+    @GetMapping(value = "/profile")
     public GetProfileResponse getProfile() {
         log.info("Attempting to retrieve profile.");
         EntitiesAuthenticationToken authToken = authenticationFacade.getAuthenticationToken();
@@ -81,7 +83,7 @@ public class SpringProfileController implements ProfileController {
      *
      * @return .
      */
-    @PutMapping(value = "/auth/profile", produces = "application/json", consumes = "application/json")
+    @PutMapping(value = "/profile", consumes = "application/json")
     @Override
     public EditProfileResponse editProfile(@RequestBody EditProfileRequest request) {
         Profile currentProfile = authenticationFacade.getAuthenticationToken().getProfile();
