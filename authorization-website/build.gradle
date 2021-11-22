@@ -1,0 +1,65 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath "com.github.node-gradle:gradle-node-plugin:3.1.1"
+    }
+}
+
+apply plugin: 'com.github.node-gradle.node';
+apply plugin: 'base';
+
+// Here we configure the current NodeJS version.
+node {
+    // We set current NodeJS Version.
+    version = '12.2.0';
+    // We set current NPM Version.
+    npmVersion = '7.8.0';
+    // We tell the plug-in whether we should download the NodeJS Binaries or not.
+    download = true;
+}
+
+npm_run_build {
+    inputs.files fileTree("public")
+    inputs.files fileTree("src")
+
+    inputs.file 'package.json'
+    inputs.file 'package-lock.json'
+
+    outputs.dir 'build'
+}
+
+task packageNpmApp(type: Zip) {
+    dependsOn npm_run_build;
+    baseName 'authorization-website';
+    extension 'jar';
+    destinationDir file("${projectDir}/build_packageNpmApp");
+    from('build') {
+        into 'static';
+    };
+}
+
+configurations {
+    npmResources
+}
+
+configurations.default.extendsFrom(configurations.npmResources);
+
+artifacts {
+    npmResources(packageNpmApp.archivePath) {
+        builtBy packageNpmApp
+        type 'jar';
+    }
+}
+
+assemble.dependsOn packageNpmApp;
+
+clean {
+    delete packageNpmApp.archivePath
+}
+
+task release {
+    println('Ill do something later.');
+}
