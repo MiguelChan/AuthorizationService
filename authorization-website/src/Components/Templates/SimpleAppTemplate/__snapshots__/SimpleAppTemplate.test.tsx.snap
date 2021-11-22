@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SimpleAppTemplate Should display the Template 1`] = `
+<div>
+  <header
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation4 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionStatic css-hip9hq-MuiPaper-root-MuiAppBar-root"
+  >
+    ApplicationToolbarPosition
+  </header>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl css-qhkpqj-MuiContainer-root"
+  >
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-3ze8r2-MuiPaper-root"
+    >
+      ApplicatonContentPosition
+    </div>
+  </div>
+</div>
+`;
