@@ -1,10 +1,10 @@
 import React from 'react';
-import { SignUpPage } from '../Pages';
+import { LandingPage } from '../Pages';
 
 const Application: React.FunctionComponent = () => {
   return (
     <>
-      <SignUpPage />
+      <LandingPage />
     </>
   );
 };
