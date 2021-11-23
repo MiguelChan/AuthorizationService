@@ -11,6 +11,8 @@ buildscript {
 apply plugin: 'com.github.node-gradle.node';
 apply plugin: 'base';
 
+String testsExecutedMarkerName = "${projectDir}/.tests.executed";
+
 // Here we configure the current NodeJS version.
 node {
     // We set current NodeJS Version.
@@ -58,8 +60,29 @@ assemble.dependsOn packageNpmApp;
 
 clean {
     delete packageNpmApp.archivePath
+    delete file("${projectDir}/build_packageNpmApp")
+    delete testsExecutedMarkerName
 }
 
-task release {
-    println('Ill do something later.');
+tasks.register('release') {
+    dependsOn tasks.test
+    dependsOn tasks.build
 }
+
+task test(type: NpmTask) {
+    dependsOn assemble
+
+    args = ['run', 'test', '--', '--watchAll=false']
+
+    inputs.files fileTree('src')
+    inputs.file 'package.json'
+    inputs.file 'package-lock.json'
+
+    // allows easy triggering re-tests
+    doLast {
+        new File(testsExecutedMarkerName).text = 'delete this file to force re-execution JavaScript tests'
+    }
+    outputs.file testsExecutedMarkerName
+}
+
+check.dependsOn test
