@@ -52,7 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/api/sign-up").permitAll()
             .antMatchers("/api/ping*", "/api/deep_ping*").permitAll()
-            .antMatchers("/*").permitAll()
+            .antMatchers("/*", "/**", "/*/**").permitAll()
             .anyRequest().authenticated()
         .and()
             .formLogin()
