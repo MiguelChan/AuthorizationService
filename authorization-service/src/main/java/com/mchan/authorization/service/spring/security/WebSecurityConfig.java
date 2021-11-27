@@ -1,11 +1,14 @@
 package com.mchan.authorization.service.spring.security;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * Global Spring Security Configuration for the Application.
@@ -64,5 +67,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .permitAll()
         .and()
             .httpBasic();
+    }
+
+    /**
+     * Configurer for CORS Methods.
+     *
+     * @return .
+     */
+    @Bean
+    public WebMvcConfigurer corsConfigure() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry
+                    .addMapping("/**")
+                    .allowCredentials(true)
+                    .allowedMethods("*")
+                    .allowedOriginPatterns("*");
+            }
+        };
     }
 }

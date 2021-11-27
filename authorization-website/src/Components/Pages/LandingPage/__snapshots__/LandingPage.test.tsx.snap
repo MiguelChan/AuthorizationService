@@ -13,16 +13,16 @@ exports[`LandingPage Should display the LandingPage 1`] = `
       >
         Auth-Hub
       </div>
-      <button
+      <a
         class="MuiButton-root MuiButton-text MuiButton-textInherit MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorInherit MuiButtonBase-root  css-1y942vo-MuiButtonBase-root-MuiButton-root"
+        href="/login"
         tabindex="0"
-        type="button"
       >
         Login
         <span
           class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
         />
-      </button>
+      </a>
     </div>
   </header>
   <div

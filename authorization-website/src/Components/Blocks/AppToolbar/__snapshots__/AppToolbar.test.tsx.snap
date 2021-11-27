@@ -1,25 +1,54 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AppToolbar Should match the Snapshot 1`] = `
+exports[`AppToolbar Should render A LogIn Button when the User is not logged-in 1`] = `
 <div>
-  <div
-    class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-1t29gy6-MuiToolbar-root"
+  <header
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation4 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionFixed mui-fixed css-11b3ww9-MuiPaper-root-MuiAppBar-root"
   >
     <div
-      class="MuiTypography-root MuiTypography-h6 css-1juivf6-MuiTypography-root"
+      class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-1t29gy6-MuiToolbar-root"
     >
-      Auth-Hub
+      <div
+        class="MuiTypography-root MuiTypography-h6 css-1juivf6-MuiTypography-root"
+      >
+        Auth-Hub
+      </div>
+      <a
+        class="MuiButton-root MuiButton-text MuiButton-textInherit MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorInherit MuiButtonBase-root  css-1y942vo-MuiButtonBase-root-MuiButton-root"
+        href="/login"
+        tabindex="0"
+      >
+        Login
+        <span
+          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+        />
+      </a>
     </div>
-    <button
-      class="MuiButton-root MuiButton-text MuiButton-textInherit MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorInherit MuiButtonBase-root  css-1y942vo-MuiButtonBase-root-MuiButton-root"
-      tabindex="0"
-      type="button"
+  </header>
+</div>
+`;
+
+exports[`AppToolbar Should render the UserName in the ToolBar when user is logged-in 1`] = `
+<div>
+  <header
+    class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation4 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionFixed mui-fixed css-11b3ww9-MuiPaper-root-MuiAppBar-root"
+  >
+    <div
+      class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-1t29gy6-MuiToolbar-root"
     >
-      Login
-      <span
-        class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
-      />
-    </button>
-  </div>
+      <div
+        class="MuiTypography-root MuiTypography-h6 css-1juivf6-MuiTypography-root"
+      >
+        Auth-Hub
+      </div>
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-ahj2mt-MuiTypography-root"
+      >
+        Welcome back, 
+        Miguel Chan
+        !
+      </p>
+    </div>
+  </header>
 </div>
 `;

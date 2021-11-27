@@ -4,6 +4,7 @@ import {
   RenderResult,
 } from '@testing-library/react';
 import { LandingPage } from './LandingPage';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('LandingPage', () => {
 
@@ -13,7 +14,11 @@ describe('LandingPage', () => {
   });
 
   const setupComponent = (): RenderResult => {
-    return render(<LandingPage />);
+    return render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
   }
 
 });

@@ -6,6 +6,9 @@ import {
 import {
   addDecorator,
 } from '@storybook/react';
+import {
+  BrowserRouter,
+} from 'react-router-dom';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
@@ -21,6 +24,12 @@ addDecorator(Story => (
       <Story />
     </ThemeProvider>
   </>
+));
+
+addDecorator(Story => (
+  <BrowserRouter>
+    <Story />
+  </BrowserRouter>
 ));
 
 export const parameters = {

@@ -4,6 +4,7 @@ import {
   RenderResult,
 } from '@testing-library/react';
 import { SignUpPage } from './SignUpPage';
+import { BrowserRouter } from 'react-router-dom';
 
 describe('SignUpPage', () => {
 
@@ -13,6 +14,10 @@ describe('SignUpPage', () => {
   });
 
   const setupComponent = (): RenderResult => {
-    return render(<SignUpPage />);
+    return render(
+      <BrowserRouter>
+        <SignUpPage />
+      </BrowserRouter>
+    );
   }
 })

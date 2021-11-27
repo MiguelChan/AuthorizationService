@@ -7,6 +7,7 @@
     "@emotion/styled": "^11.6.0",
     "@fontsource/roboto": "^4.5.1",
     "@mui/icons-material": "^5.1.1",
+    "@mui/lab": "*",
     "@mui/material": "^5.1.1",
     "@reduxjs/toolkit": "^1.6.2",
     "@testing-library/jest-dom": "^4.2.4",
@@ -17,10 +18,13 @@
     "@types/react": "^16.14.21",
     "@types/react-dom": "^16.9.14",
     "@types/react-redux": "^7.1.20",
+    "axios": "^0.24.0",
     "formik": "^2.2.9",
+    "history": "^5.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.6",
+    "react-router-dom": "^6.0.2",
     "react-scripts": "4.0.3",
     "typescript": "~4.1.5",
     "yup": "^0.32.11",
@@ -29,10 +33,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test:watch": "react-scripts test",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "test": "react-scripts test --watchAll=false"
   },
   "eslintConfig": {
     "extends": "react-app",
@@ -65,7 +70,8 @@
     "@storybook/addon-links": "^6.3.12",
     "@storybook/node-logger": "^6.3.12",
     "@storybook/preset-create-react-app": "^3.2.0",
-    "@storybook/react": "^6.3.12"
+    "@storybook/react": "^6.3.12",
+    "@testing-library/react-hooks": "^7.0.2"
   },
   "jest": {
     "clearMocks": true,
@@ -76,7 +82,9 @@
       "!src/**/index.ts",
       "!src/index.ts",
       "!src/app/**/*.ts",
-      "!src/Models/**/*.ts"
+      "!src/Models/**/*.ts",
+      "!src/Components/Context/**/*.ts"
     ]
-  }
+  },
+  "proxy": "http://localhost:8094/"
 }
