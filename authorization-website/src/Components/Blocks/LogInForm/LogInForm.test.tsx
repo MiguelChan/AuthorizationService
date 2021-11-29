@@ -19,7 +19,12 @@ describe('LogInForm', () => {
   });
 
   const setupComponent = (): RenderResult => {
-    return render(<LogInForm onLogIn={mockOnLogInFn} />);
+    return render(
+      <LogInForm 
+        onLogIn={mockOnLogInFn} 
+        isLoading={false}
+      />
+      );
   };
 
 });
