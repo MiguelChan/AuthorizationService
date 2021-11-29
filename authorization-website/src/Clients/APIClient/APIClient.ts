@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { ProfileDto } from "../../Models";
+import { ProfileDto, SignUpRequest, SignUpResponse } from "../../Models";
 
 class APIClient {
 
@@ -33,6 +33,23 @@ class APIClient {
       })
       .catch((error: AxiosError) => {
         console.info(error);
+        reject(error);
+      });
+    });
+  }
+
+  public signUp(signUpRequest: SignUpRequest): Promise<SignUpResponse> {
+    const url = '/sign-up';
+    return new Promise<SignUpResponse>((accept, reject) => {
+      const fullUrl = `${this.API_URL}${url}`;
+
+      axios.post(fullUrl, signUpRequest)
+      .then((response: AxiosResponse<SignUpResponse>) => {
+        console.info(`Message from Server: ${JSON.stringify(response)}`);
+        accept(response.data);
+      })
+      .catch((error: AxiosError) => {
+        console.error(`Error from Server: ${JSON.stringify(error)}`);
         reject(error);
       });
     });

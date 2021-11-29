@@ -52,7 +52,13 @@ export const SignUpForm: React.FunctionComponent<SignUpFormProps> = ({
     },
     validationSchema,
     onSubmit: (values) => {
-      onSignUpRequestCreatedListener(values);
+      onSignUpRequestCreatedListener({
+        firstName: values.firstName!,
+        lastName: values.lastName!,
+        emailAddress: values.email!,
+        phoneNumber: values.phoneNumber!,
+        password: values.password!
+      });
     },
   });
 
