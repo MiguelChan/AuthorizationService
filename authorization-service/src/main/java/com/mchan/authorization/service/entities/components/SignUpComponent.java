@@ -71,7 +71,7 @@ public class SignUpComponent {
     @Transactional
     public Optional<String> signUp(SignUpRequest request) throws Exception {
         // 1.- We validate the Request
-        log.info("Attempting to validate: {}", request);
+        log.info("Validating sign-up request");
         signUpRequestValidator.validateSignUpRequest(request);
 
         // 2.- We create a Profile based off the request
