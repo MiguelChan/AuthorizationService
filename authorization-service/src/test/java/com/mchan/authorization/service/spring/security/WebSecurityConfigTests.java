@@ -6,8 +6,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -32,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
@@ -96,6 +99,54 @@ public class WebSecurityConfigTests {
         mvc.perform(get("/login")).andExpect(status().isOk());
         // Missing static files may return 404, but must not trigger authentication.
         mvc.perform(get("/static/missing.js")).andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void signUpPreflight_should_allowAnonymousCrossOriginRequests() throws Exception {
+        mvc.perform(options("/api/sign-up")
+                .header(HttpHeaders.ORIGIN, "https://client.example")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "content-type"))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://client.example"))
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "POST"))
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "content-type"))
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
+        verifyNoInteractions(signUpComponent, logInComponent);
+    }
+
+    @Test
+    public void privateApiPreflight_should_allowAuthorizationHeaderWithoutCredentials() throws Exception {
+        mvc.perform(options("/api/profile")
+                .header(HttpHeaders.ORIGIN, "https://client.example")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "GET")
+                .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "authorization"))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://client.example"))
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET"))
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, "authorization"))
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true"));
+        verifyNoInteractions(getProfileComponent, logInComponent);
+    }
+
+    @Test
+    public void actualCrossOriginRequests_should_preservePublicAndPrivateAuthenticationRules() throws Exception {
+        when(signUpComponent.signUp(any())).thenReturn(Optional.of("profile-1"));
+        mvc.perform(post("/api/sign-up").header(HttpHeaders.ORIGIN, "https://client.example")
+                .contentType(MediaType.APPLICATION_JSON).content("{}"))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://client.example"));
+        mvc.perform(get("/api/profile").header(HttpHeaders.ORIGIN, "https://client.example"))
+            .andExpect(status().isUnauthorized())
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://client.example"));
+        verifyNoInteractions(getProfileComponent, logInComponent);
+        Profile profile = Profile.builder().profileId("profile-1").build();
+        when(logInComponent.logIn(any())).thenReturn(profile);
+        when(getProfileComponent.getProfile("profile-1")).thenReturn(profile);
+        mvc.perform(get("/api/profile").header(HttpHeaders.ORIGIN, "https://client.example")
+                .with(httpBasic("user@example.com", "test-password")))
+            .andExpect(status().isOk())
+            .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "https://client.example"));
     }
 
     @Test
