@@ -75,7 +75,7 @@ public class SpringProfileControllerTests {
         assertThatThrownBy(() -> profileController.getProfile())
             .isInstanceOfAny(ResponseStatusException.class)
             .hasMessageContaining("500")
-            .hasMessageContaining(expectedErrorMessage);
+            .hasMessageContaining("Unable to retrieve profile");
     }
 
     @Test

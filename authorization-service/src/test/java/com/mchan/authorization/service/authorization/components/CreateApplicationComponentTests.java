@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.mchan.authorization.lib.dtos.CreateApplicationRequest;
+import com.mchan.authorization.lib.models.Application;
 import com.mchan.authorization.service.authorization.dao.ApplicationDao;
 import com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity;
 import com.mchan.authorization.service.authorization.mappers.ApplicationMapper;
@@ -49,6 +50,26 @@ public class CreateApplicationComponentTests {
         when(profileDao.getProfile(any())).thenReturn(null);
 
         assertThatThrownBy(() -> component.createApplication(request)).isInstanceOfAny(InvalidArgumentException.class);
+    }
+
+    @Test
+    public void createApplication_should_rejectMissingApplicationsBeforeReadingOrWriting() {
+        assertThatThrownBy(() -> component.createApplication(null)).isInstanceOf(InvalidArgumentException.class);
+        assertThatThrownBy(() -> component.createApplication(CreateApplicationRequest.builder().profileId("owner").build()))
+            .isInstanceOf(InvalidArgumentException.class);
+        org.mockito.Mockito.verifyNoInteractions(profileDao, applicationDao);
+    }
+
+    @Test
+    public void createApplication_should_rejectMissingRequiredFieldsBeforeReadingOrWriting() {
+        Application valid = Application.builder().appName("example").shortDescription("test").redirectUrl("https://example.com").build();
+        Application[] invalid = {valid.toBuilder().appName(null).build(), valid.toBuilder().shortDescription(" ").build(),
+            valid.toBuilder().redirectUrl(null).build()};
+        for (Application application : invalid) {
+            CreateApplicationRequest request = CreateApplicationRequest.builder().profileId("owner").application(application).build();
+            assertThatThrownBy(() -> component.createApplication(request)).isInstanceOf(InvalidArgumentException.class);
+        }
+        org.mockito.Mockito.verifyNoInteractions(profileDao, applicationDao);
     }
 
     @Test
