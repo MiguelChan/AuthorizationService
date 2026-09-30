@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 /**
  * The request for performing a Log In.
@@ -17,6 +18,7 @@ public class LogInRequest {
 
     private AuthenticationType authType;
     private String userName;
+    @ToString.Exclude
     private String password;
 
 }
