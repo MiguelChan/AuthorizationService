@@ -6,10 +6,12 @@ import com.mchan.authorization.lib.dtos.DeactivateApplicationResponse;
 import com.mchan.authorization.lib.dtos.UpdateApplicationRequest;
 import com.mchan.authorization.lib.dtos.UpdateApplicationResponse;
 import com.mchan.authorization.lib.models.Application;
+import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
 import com.mchan.authorization.service.authorization.controllers.ApplicationsController;
+import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class SpringApplicationsController implements ApplicationsController {
     private final CreateApplicationComponent createApplicationComponent;
     private final DeleteApplicationComponent deactivateApplicationComponent;
     private final UpdateApplicationComponent updateApplicationComponent;
+    private final AuthenticationFacade authenticationFacade;
+    private final ApplicationOwnershipComponent applicationOwnershipComponent;
 
     /**
      * .
@@ -42,20 +46,36 @@ public class SpringApplicationsController implements ApplicationsController {
      * @param deleteApplicationComponent .
      *
      * @param updateApplicationComponent .
+     *
+     * @param authenticationFacade Authenticated profile access.
+     *
+     * @param applicationOwnershipComponent Stored ownership checks.
      */
     @Autowired
     public SpringApplicationsController(CreateApplicationComponent createApplicationComponent,
                                         DeleteApplicationComponent deleteApplicationComponent,
-                                        UpdateApplicationComponent updateApplicationComponent) {
+                                        UpdateApplicationComponent updateApplicationComponent,
+                                        AuthenticationFacade authenticationFacade,
+                                        ApplicationOwnershipComponent applicationOwnershipComponent) {
         this.createApplicationComponent = createApplicationComponent;
         this.deactivateApplicationComponent = deleteApplicationComponent;
         this.updateApplicationComponent = updateApplicationComponent;
+        this.authenticationFacade = authenticationFacade;
+        this.applicationOwnershipComponent = applicationOwnershipComponent;
     }
 
     @PostMapping("/applications")
     @Override
     public CreateApplicationResponse createApplication(@RequestBody CreateApplicationRequest request) {
-        int applicationId = createApplicationComponent.createApplication(request);
+        String profileId = authenticationFacade.getAuthenticationToken().getProfile().getProfileId();
+        if (request.getProfileId() != null && !profileId.equals(request.getProfileId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Cannot create applications for another profile");
+        }
+        CreateApplicationRequest ownedRequest = CreateApplicationRequest.builder()
+            .application(request.getApplication())
+            .profileId(profileId)
+            .build();
+        int applicationId = createApplicationComponent.createApplication(ownedRequest);
         return CreateApplicationResponse.builder()
             .applicationId(applicationId)
             .build();
@@ -64,6 +84,7 @@ public class SpringApplicationsController implements ApplicationsController {
     @DeleteMapping("/applications/{applicationId}")
     @Override
     public DeactivateApplicationResponse deactivateApplication(@PathVariable("applicationId") int applicationId) {
+        requireOwner(applicationId);
         try {
             deactivateApplicationComponent.deleteApplication(applicationId);
             return DeactivateApplicationResponse.builder()
@@ -82,6 +103,7 @@ public class SpringApplicationsController implements ApplicationsController {
     @Override
     public UpdateApplicationResponse updateApplication(@PathVariable("applicationId") int applicationId,
                                                        @RequestBody UpdateApplicationRequest request) {
+        requireOwner(applicationId);
         try {
             Application appToUpdate = request.getApplication().toBuilder()
                 .applicationId(applicationId)
@@ -96,6 +118,15 @@ public class SpringApplicationsController implements ApplicationsController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+    }
+
+    private void requireOwner(int applicationId) {
+        String profileId = authenticationFacade.getAuthenticationToken().getProfile().getProfileId();
+        try {
+            applicationOwnershipComponent.requireOwner(applicationId, profileId);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         }
     }
 }

@@ -14,9 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.mchan.authorization.lib.models.Profile;
+import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
+import com.mchan.authorization.service.authorization.dao.ApplicationDao;
 import com.mchan.authorization.service.authorization.spring.controllers.SpringApplicationsController;
 import com.mchan.authorization.service.entities.components.EditProfileComponent;
 import com.mchan.authorization.service.entities.components.GetProfileComponent;
@@ -45,7 +47,7 @@ import org.springframework.test.web.servlet.MvcResult;
  */
 @WebMvcTest(controllers = {SpringApplicationsController.class, SpringProfileController.class,
     SpringHealthController.class, SpringSignUpController.class, CatchAllController.class})
-@Import({WebSecurityConfig.class, EntitiesAuthenticationProvider.class, AuthenticationFacade.class})
+@Import({WebSecurityConfig.class, EntitiesAuthenticationProvider.class, AuthenticationFacade.class, ApplicationOwnershipComponent.class})
 public class WebSecurityConfigTests {
 
     @Autowired
@@ -66,6 +68,8 @@ public class WebSecurityConfigTests {
     private LogInComponent logInComponent;
     @MockBean
     private HealthDao healthDao;
+    @MockBean
+    private ApplicationDao applicationDao;
 
     @Test
     public void anonymousRequests_should_beRejectedBeforePrivateComponents() throws Exception {
