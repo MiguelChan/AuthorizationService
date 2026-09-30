@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 import com.mchan.authorization.service.spring.security.EntitiesAuthenticationToken;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +24,13 @@ public class AuthenticationFacadeTests {
      */
     @BeforeEach
     public void setup() {
+        SecurityContextHolder.clearContext();
         authenticationFacade = new AuthenticationFacade();
+    }
+
+    @AfterEach
+    public void clearAuthentication() {
+        SecurityContextHolder.clearContext();
     }
 
     @Test
