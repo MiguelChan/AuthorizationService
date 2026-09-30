@@ -1,0 +1,5 @@
+# feat|fix|bug|docs|chores(moduleName): <description>
+# Choose one type. Use a concrete module name and a description under 80 characters.
+# Example: fix(authorization): require authentication for application mutations
+
+# Optional body: explain behavior, the reason for the change, and validation.
