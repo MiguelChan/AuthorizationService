@@ -14,11 +14,15 @@ import com.mchan.authorization.lib.dtos.DeactivateApplicationResponse;
 import com.mchan.authorization.lib.dtos.UpdateApplicationRequest;
 import com.mchan.authorization.lib.dtos.UpdateApplicationResponse;
 import com.mchan.authorization.lib.models.Application;
+import com.mchan.authorization.lib.models.Profile;
+import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
+import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
+import com.mchan.authorization.service.spring.security.EntitiesAuthenticationToken;
 import io.github.benas.randombeans.api.EnhancedRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,6 +43,10 @@ public class SpringApplicationsControllerTests {
     private DeleteApplicationComponent deleteApplicationComponent;
     @Mock
     private UpdateApplicationComponent updateApplicationComponent;
+    @Mock
+    private AuthenticationFacade authenticationFacade;
+    @Mock
+    private ApplicationOwnershipComponent applicationOwnershipComponent;
 
     private SpringApplicationsController appsController;
 
@@ -47,13 +55,17 @@ public class SpringApplicationsControllerTests {
      */
     @BeforeEach
     public void setup() {
-        appsController = new SpringApplicationsController(createApplicationComponent, deleteApplicationComponent, updateApplicationComponent);
+        appsController = new SpringApplicationsController(createApplicationComponent, deleteApplicationComponent, updateApplicationComponent,
+            authenticationFacade, applicationOwnershipComponent);
+        when(authenticationFacade.getAuthenticationToken()).thenReturn(EntitiesAuthenticationToken.builder()
+            .principal("owner").credentials("test-password").profile(Profile.builder().profileId("owner-profile").build()).build());
     }
 
     @Test
     public void createApplication_should_createTheApplication() {
         int expectedAppId = 12345;
         CreateApplicationRequest expectedRequest = EnhancedRandom.random(CreateApplicationRequest.class);
+        expectedRequest.setProfileId("owner-profile");
         when(createApplicationComponent.createApplication(any())).thenReturn(expectedAppId);
 
         CreateApplicationResponse response = appsController.createApplication(expectedRequest);
