@@ -1,5 +1,6 @@
 package com.mchan.authorization.service.authorization.mappers;
 
+import com.mchan.authorization.lib.models.AppType;
 import com.mchan.authorization.lib.models.Application;
 import com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,7 @@ public class ApplicationMapper {
             .appHomePage(application.getAppHomePage())
             .shortDescription(application.getShortDescription())
             .redirectUrl(application.getRedirectUrl())
+            .appType(application.getAppType() == null ? AppType.SERVICE : application.getAppType())
             .isActive(application.isActive())
             .build();
     }

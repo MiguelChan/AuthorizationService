@@ -19,6 +19,8 @@ repositories {
 }
 
 dependencies {
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'
+
     compileOnly 'org.projectlombok:lombok:1.18.20'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.20'

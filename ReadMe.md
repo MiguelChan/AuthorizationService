@@ -35,3 +35,28 @@ for our Aplication.
 * Docker
 * Heroku for hosting our Application
 * CloudFlare for helping us setting up TLS/SSL Certificates.
+
+## Application input contract
+
+Application creation requires a `redirectUrl` containing an absolute HTTP or HTTPS
+origin. A root slash and a valid port are allowed; other paths, queries, fragments,
+credentials and relative URLs are rejected with HTTP 400. Localhost origins are
+allowed for local development. Creation and explicit URL updates use the same rule.
+Existing stored URLs are preserved when an update omits `redirectUrl`.
+
+The optional `appType` accepts exactly `Service` or `WebService`. Creation defaults
+to `Service`; updates preserve the stored type when omitted. Migration V6 backfills
+existing applications as `Service` and constrains stored values to these two types.
+
+Example application payload:
+
+```json
+{
+  "application": {
+    "appName": "Example service",
+    "shortDescription": "Service registration",
+    "redirectUrl": "https://example.com",
+    "appType": "WebService"
+  }
+}
+```

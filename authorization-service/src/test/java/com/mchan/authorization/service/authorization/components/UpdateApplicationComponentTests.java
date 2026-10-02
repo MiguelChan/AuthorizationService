@@ -38,7 +38,7 @@ public class UpdateApplicationComponentTests {
      */
     @BeforeEach
     public void setup() {
-        component = new UpdateApplicationComponent(applicationDao, objectUtils);
+        component = new UpdateApplicationComponent(applicationDao, objectUtils, new ApplicationInputValidator());
     }
 
     @Test
@@ -47,6 +47,7 @@ public class UpdateApplicationComponentTests {
 
         Application newApp = EnhancedRandom.random(Application.class, "applicationId");
         newApp.setApplicationId(expectedAppId);
+        newApp.setRedirectUrl("https://example.com");
 
         ApplicationEntity databaseApp = EnhancedRandom.random(ApplicationEntity.class, "isActive");
         databaseApp.setActive(true);
@@ -57,6 +58,7 @@ public class UpdateApplicationComponentTests {
             .appHomePage(newApp.getAppHomePage())
             .shortDescription(newApp.getShortDescription())
             .redirectUrl(newApp.getRedirectUrl())
+            .appType(newApp.getAppType())
             .build();
 
         when(applicationDao.getApplication(expectedAppId)).thenReturn(databaseApp);
@@ -73,6 +75,7 @@ public class UpdateApplicationComponentTests {
 
         Application newApp = EnhancedRandom.random(Application.class, "applicationId");
         newApp.setApplicationId(expectedAppId);
+        newApp.setRedirectUrl("https://example.com");
 
         ApplicationEntity databaseApp = EnhancedRandom.random(ApplicationEntity.class, "isActive");
         databaseApp.setActive(true);
@@ -83,6 +86,7 @@ public class UpdateApplicationComponentTests {
             .appHomePage(newApp.getAppHomePage())
             .shortDescription(newApp.getShortDescription())
             .redirectUrl(newApp.getRedirectUrl())
+            .appType(newApp.getAppType())
             .build();
 
         when(applicationDao.getApplication(expectedAppId)).thenReturn(databaseApp);
@@ -99,6 +103,7 @@ public class UpdateApplicationComponentTests {
 
         Application newApp = EnhancedRandom.random(Application.class, "applicationId");
         newApp.setApplicationId(expectedAppId);
+        newApp.setRedirectUrl("https://example.com");
 
         ApplicationEntity databaseApp = EnhancedRandom.random(ApplicationEntity.class, "isActive");
         databaseApp.setActive(false);
@@ -115,4 +120,22 @@ public class UpdateApplicationComponentTests {
         org.mockito.Mockito.verify(applicationDao, org.mockito.Mockito.never()).updateApplication(org.mockito.ArgumentMatchers.any());
     }
 
+
+    @Test
+    public void updateApplication_should_rejectInvalidUrlsBeforeReadingOrWriting() {
+        Application app = Application.builder().applicationId(7).redirectUrl("https://example.com?next=app").build();
+        assertThatThrownBy(() -> component.updateApplication(app)).isInstanceOf(InvalidArgumentException.class);
+        org.mockito.Mockito.verifyNoInteractions(applicationDao);
+    }
+
+    @Test
+    public void partialUpdate_should_preserveStoredTypeAndLegacyUrl() {
+        ApplicationEntity stored = ApplicationEntity.builder().applicationId(7).profileId("owner").isActive(true)
+            .appType(com.mchan.authorization.lib.models.AppType.WEB_SERVICE).redirectUrl("https://example.com/legacy").build();
+        when(applicationDao.getApplication(7)).thenReturn(stored);
+        ApplicationEntity expected = stored.toBuilder().appName("changed").build();
+        when(applicationDao.updateApplication(expected)).thenReturn(1);
+        assertThat(component.updateApplication(Application.builder().applicationId(7).appName("changed").build())).isTrue();
+        org.mockito.Mockito.verify(applicationDao).updateApplication(expected);
+    }
 }

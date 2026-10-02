@@ -19,6 +19,7 @@ public class UpdateApplicationComponent {
 
     private final ApplicationDao applicationDao;
     private final ObjectUtils objectUtils;
+    private final ApplicationInputValidator inputValidator;
 
     /**
      * .
@@ -26,11 +27,15 @@ public class UpdateApplicationComponent {
      * @param applicationDao .
      *
      * @param objectUtils .
+     *
+     * @param inputValidator Application input validation.
      */
     @Autowired
-    public UpdateApplicationComponent(ApplicationDao applicationDao, ObjectUtils objectUtils) {
+    public UpdateApplicationComponent(ApplicationDao applicationDao, ObjectUtils objectUtils,
+                                      ApplicationInputValidator inputValidator) {
         this.applicationDao = applicationDao;
         this.objectUtils = objectUtils;
+        this.inputValidator = inputValidator;
     }
 
     /**
@@ -44,6 +49,9 @@ public class UpdateApplicationComponent {
         if (application == null) {
             throw new InvalidArgumentException("Application is required");
         }
+        if (application.getRedirectUrl() != null) {
+            inputValidator.validateRedirectUrl(application.getRedirectUrl());
+        }
         ApplicationEntity dbApp = validateApplicationState(application.getApplicationId());
 
         ApplicationEntity appToUpdate = dbApp.toBuilder()
@@ -52,6 +60,7 @@ public class UpdateApplicationComponent {
             .appHomePage(objectUtils.firstNonNull(application.getAppHomePage(), dbApp.getAppHomePage()))
             .shortDescription(objectUtils.firstNonNull(application.getShortDescription(), dbApp.getShortDescription()))
             .redirectUrl(objectUtils.firstNonNull(application.getRedirectUrl(), dbApp.getRedirectUrl()))
+            .appType(objectUtils.firstNonNull(application.getAppType(), dbApp.getAppType()))
             .build();
 
         int updatedRows = applicationDao.updateApplication(appToUpdate);

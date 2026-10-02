@@ -34,6 +34,13 @@ public class ApplicationMapperTests {
         assertThat(appEntity.getAppIcon()).isEqualTo(app.getAppIcon());
         assertThat(appEntity.getAppHomePage()).isEqualTo(app.getAppHomePage());
         assertThat(appEntity.getShortDescription()).isEqualTo(app.getShortDescription());
+        assertThat(appEntity.getAppType()).isEqualTo(app.getAppType());
     }
 
+
+    @Test
+    public void omittedType_should_defaultToService() {
+        assertThat(appMapper.fromApplication(Application.builder().build()).getAppType())
+            .isEqualTo(com.mchan.authorization.lib.models.AppType.SERVICE);
+    }
 }

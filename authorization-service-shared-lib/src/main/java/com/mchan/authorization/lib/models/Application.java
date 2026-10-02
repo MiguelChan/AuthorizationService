@@ -20,5 +20,6 @@ public class Application {
     private String appHomePage;
     private String shortDescription;
     private String redirectUrl;
+    private AppType appType;
     private boolean isActive;
 }

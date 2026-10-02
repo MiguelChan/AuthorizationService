@@ -41,12 +41,13 @@ public class CreateApplicationComponentTests {
      */
     @BeforeEach
     public void setup() {
-        component = new CreateApplicationComponent(profileDao, applicationDao, applicationMapper);
+        component = new CreateApplicationComponent(profileDao, applicationDao, applicationMapper, new ApplicationInputValidator());
     }
 
     @Test
     public void createApplication_should_throwInvalidArgumentException_when_theProfileDoesNotExist() {
         CreateApplicationRequest request = EnhancedRandom.random(CreateApplicationRequest.class);
+        request.getApplication().setRedirectUrl("https://example.com");
         when(profileDao.getProfile(any())).thenReturn(null);
 
         assertThatThrownBy(() -> component.createApplication(request)).isInstanceOfAny(InvalidArgumentException.class);
@@ -82,6 +83,7 @@ public class CreateApplicationComponentTests {
 
         CreateApplicationRequest request = EnhancedRandom.random(CreateApplicationRequest.class, "profileId");
         request.setProfileId(profileId);
+        request.getApplication().setRedirectUrl("https://example.com");
 
         ApplicationEntity applicationEntity = EnhancedRandom.random(ApplicationEntity.class);
         when(applicationMapper.fromApplication(request.getApplication())).thenReturn(applicationEntity);
@@ -98,4 +100,12 @@ public class CreateApplicationComponentTests {
         assertThat(createdAppId).isEqualTo(expectedAppId);
     }
 
+
+    @Test
+    public void createApplication_should_rejectInvalidUrlsBeforeReadingOrWriting() {
+        Application app = Application.builder().appName("example").shortDescription("test").redirectUrl("/callback").build();
+        CreateApplicationRequest request = CreateApplicationRequest.builder().profileId("owner").application(app).build();
+        assertThatThrownBy(() -> component.createApplication(request)).isInstanceOf(InvalidArgumentException.class);
+        org.mockito.Mockito.verifyNoInteractions(profileDao, applicationDao, applicationMapper);
+    }
 }

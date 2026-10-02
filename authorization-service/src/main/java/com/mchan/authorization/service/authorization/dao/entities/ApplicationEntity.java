@@ -1,5 +1,6 @@
 package com.mchan.authorization.service.authorization.dao.entities;
 
+import com.mchan.authorization.lib.models.AppType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +21,6 @@ public class ApplicationEntity {
     private String appHomePage;
     private String shortDescription;
     private String redirectUrl;
+    private AppType appType;
     private boolean isActive;
 }
