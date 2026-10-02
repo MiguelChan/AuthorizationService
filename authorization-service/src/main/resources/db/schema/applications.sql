@@ -6,6 +6,8 @@ create table auth_db.applications (
     app_home_page varchar default null,
     short_description varchar not null,
     redirect_url varchar not null,
+    app_type varchar not null default 'SERVICE',
+    constraint applications_app_type_check check (app_type in ('SERVICE', 'WEB_SERVICE')),
     is_active boolean not null,
     constraint fk_profile foreign key (profile_id) references auth_db.profiles(profile_id)
 );

@@ -22,6 +22,7 @@ public class CreateApplicationComponent {
     private final ProfileDao profileDao;
     private final ApplicationDao applicationDao;
     private final ApplicationMapper applicationMapper;
+    private final ApplicationInputValidator inputValidator;
 
     /**
      * .
@@ -31,14 +32,18 @@ public class CreateApplicationComponent {
      * @param applicationDao .
      *
      * @param applicationMapper .
+     *
+     * @param inputValidator Application input validation.
      */
     @Autowired
     public CreateApplicationComponent(ProfileDao profileDao,
                                       ApplicationDao applicationDao,
-                                      ApplicationMapper applicationMapper) {
+                                      ApplicationMapper applicationMapper,
+                                      ApplicationInputValidator inputValidator) {
         this.profileDao = profileDao;
         this.applicationDao = applicationDao;
         this.applicationMapper = applicationMapper;
+        this.inputValidator = inputValidator;
     }
 
     /**
@@ -69,6 +74,7 @@ public class CreateApplicationComponent {
         requireText(application.getAppName(), "Application name is required");
         requireText(application.getShortDescription(), "Short description is required");
         requireText(application.getRedirectUrl(), "Redirect URL is required");
+        inputValidator.validateRedirectUrl(application.getRedirectUrl());
     }
 
     private void requireText(String value, String message) {

@@ -11,6 +11,7 @@
         <result property="appHomePage" column="app_home_page" />
         <result property="shortDescription" column="short_description" />
         <result property="redirectUrl" column="redirect_url" />
+        <result property="appType" column="app_type" />
         <result property="isActive" column="is_active" />
     </resultMap>
 
@@ -28,6 +29,7 @@
             app_home_page,
             short_description,
             redirect_url,
+            app_type,
             is_active
         ) VALUES (
             #{profileId},
@@ -36,6 +38,7 @@
             #{appHomePage},
             #{shortDescription},
             #{redirectUrl},
+            #{appType},
             true
         );
     </insert>
@@ -56,6 +59,7 @@
             app_home_page,
             short_description,
             redirect_url,
+            app_type,
             is_active
         FROM auth_db.applications
         WHERE
@@ -69,7 +73,8 @@
             app_icon = #{appIcon},
             app_home_page = #{appHomePage},
             short_description = #{shortDescription},
-            redirect_url = #{redirectUrl}
+            redirect_url = #{redirectUrl},
+            app_type = #{appType}
         WHERE
             application_id = #{applicationId}
     </update>
