@@ -3,10 +3,13 @@ package com.mchan.authorization.service.spring.security;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -51,12 +54,20 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+            .cors()
+        .and()
             .csrf().disable()
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/api/sign-up").permitAll()
-            .antMatchers("/api/ping*", "/api/deep_ping*").permitAll()
-            .antMatchers("/*", "/**", "/*/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/api/ping", "/api/deep_ping").permitAll()
+            .antMatchers(HttpMethod.GET, "/", "/login/**", "/index.html", "/static/**",
+                "/favicon.ico", "/manifest.json", "/robots.txt").permitAll()
+            .antMatchers("/error").permitAll()
             .anyRequest().authenticated()
+        .and()
+            .exceptionHandling()
+            .defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                new AntPathRequestMatcher("/api/**"))
         .and()
             .formLogin()
             .loginPage("/login")
