@@ -1,6 +1,5 @@
 package com.mchan.authorization.service.spring;
 
-import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * This will be later used for building the SPA.
  */
 @Controller
-public class CatchAllController implements ErrorController {
+public class CatchAllController {
 
     /**
      * .
@@ -18,8 +17,7 @@ public class CatchAllController implements ErrorController {
      */
     @RequestMapping(value = {
         "/",
-        "/login/**",
-        "/error"
+        "/login/**"
     })
     public String index() {
         return "index.html";

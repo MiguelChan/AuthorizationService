@@ -47,7 +47,7 @@ public class SpringSignUpController implements SignUpController {
             );
         } catch (Exception e) {
             log.error(e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to register account", e);
         }
     }
 }

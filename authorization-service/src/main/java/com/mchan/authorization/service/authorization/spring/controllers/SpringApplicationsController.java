@@ -16,6 +16,7 @@ import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -75,10 +76,18 @@ public class SpringApplicationsController implements ApplicationsController {
             .application(request.getApplication())
             .profileId(profileId)
             .build();
-        int applicationId = createApplicationComponent.createApplication(ownedRequest);
-        return CreateApplicationResponse.builder()
-            .applicationId(applicationId)
-            .build();
+        try {
+            int applicationId = createApplicationComponent.createApplication(ownedRequest);
+            return CreateApplicationResponse.builder()
+                .applicationId(applicationId)
+                .build();
+        } catch (InvalidArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Profile does not exist", e);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to create application", e);
+        }
     }
 
     @DeleteMapping("/applications/{applicationId}")
@@ -95,7 +104,7 @@ public class SpringApplicationsController implements ApplicationsController {
         } catch (InvalidArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to deactivate application", e);
         }
     }
 
@@ -105,6 +114,9 @@ public class SpringApplicationsController implements ApplicationsController {
                                                        @RequestBody UpdateApplicationRequest request) {
         requireOwner(applicationId);
         try {
+            if (request.getApplication() == null) {
+                throw new InvalidArgumentException("Application is required");
+            }
             Application appToUpdate = request.getApplication().toBuilder()
                 .applicationId(applicationId)
                 .build();
@@ -114,10 +126,12 @@ public class SpringApplicationsController implements ApplicationsController {
             return UpdateApplicationResponse.builder()
                 .success(isUpdated)
                 .build();
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (InvalidArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to update application", e);
         }
     }
 
@@ -127,6 +141,10 @@ public class SpringApplicationsController implements ApplicationsController {
             applicationOwnershipComponent.requireOwner(applicationId, profileId);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        } catch (AccessDeniedException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to access application", e);
         }
     }
 }

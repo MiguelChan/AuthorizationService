@@ -47,6 +47,7 @@ public class CreateApplicationComponent {
      * @param request .
      */
     public int createApplication(CreateApplicationRequest request) {
+        validateRequest(request);
         String profileId = request.getProfileId();
         Application application = request.getApplication();
 
@@ -57,6 +58,23 @@ public class CreateApplicationComponent {
             .build();
 
         return applicationDao.createApplication(appToStore);
+    }
+
+    private void validateRequest(CreateApplicationRequest request) {
+        if (request == null || request.getApplication() == null) {
+            throw new InvalidArgumentException("Application is required");
+        }
+        Application application = request.getApplication();
+        requireText(request.getProfileId(), "Profile ID is required");
+        requireText(application.getAppName(), "Application name is required");
+        requireText(application.getShortDescription(), "Short description is required");
+        requireText(application.getRedirectUrl(), "Redirect URL is required");
+    }
+
+    private void requireText(String value, String message) {
+        if (value == null || value.isBlank()) {
+            throw new InvalidArgumentException(message);
+        }
     }
 
     private ProfileEntity getProfile(String profileId) {

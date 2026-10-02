@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.mchan.authorization.lib.models.Application;
 import com.mchan.authorization.service.authorization.dao.ApplicationDao;
 import com.mchan.authorization.service.authorization.dao.entities.ApplicationEntity;
+import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
 import com.mchan.authorization.service.utils.ObjectUtils;
 import io.github.benas.randombeans.api.EnhancedRandom;
@@ -105,6 +106,13 @@ public class UpdateApplicationComponentTests {
         when(applicationDao.getApplication(expectedAppId)).thenReturn(databaseApp);
 
         assertThatThrownBy(() -> component.updateApplication(newApp)).isInstanceOfAny(InvalidArgumentException.class);
+    }
+
+    @Test
+    public void updateApplication_should_reportMissingApplicationWithoutWriting() {
+        Application application = Application.builder().applicationId(7).build();
+        assertThatThrownBy(() -> component.updateApplication(application)).isInstanceOf(EntityNotFoundException.class);
+        org.mockito.Mockito.verify(applicationDao, org.mockito.Mockito.never()).updateApplication(org.mockito.ArgumentMatchers.any());
     }
 
 }
