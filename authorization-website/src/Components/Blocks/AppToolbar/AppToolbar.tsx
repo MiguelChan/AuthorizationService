@@ -11,7 +11,10 @@ export const AppToolbar: React.FunctionComponent = () => {
     const profile = profileContext.getProfile();
     
     if (profile === undefined) {
-      return <Button color='inherit' component={Link} to='/login'>Login</Button>;
+      return <>
+        <Button color='inherit' component={Link} to='/login'>Login</Button>
+        <Button color='inherit' component={Link} to='/register'>Register</Button>
+      </>;
     }
 
     return (

@@ -8,6 +8,7 @@ class APIClient {
   constructor() {
     axios.defaults.withCredentials = true;
     this.logIn = this.logIn.bind(this);
+    this.signUp = this.signUp.bind(this);
   }
 
   public logIn(username: string, password: string): Promise<ProfileDto> {
@@ -32,7 +33,6 @@ class APIClient {
         accept(result.data);
       })
       .catch((error: AxiosError) => {
-        console.info(error);
         reject(error);
       });
     });
@@ -45,11 +45,9 @@ class APIClient {
 
       axios.post(fullUrl, signUpRequest)
       .then((response: AxiosResponse<SignUpResponse>) => {
-        console.info(`Message from Server: ${JSON.stringify(response)}`);
         accept(response.data);
       })
       .catch((error: AxiosError) => {
-        console.error(`Error from Server: ${JSON.stringify(error)}`);
         reject(error);
       });
     });

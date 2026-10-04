@@ -23,6 +23,16 @@ exports[`LandingPage Should display the LandingPage 1`] = `
           class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
         />
       </a>
+      <a
+        class="MuiButton-root MuiButton-text MuiButton-textInherit MuiButton-sizeMedium MuiButton-textSizeMedium MuiButton-colorInherit MuiButtonBase-root  css-1y942vo-MuiButtonBase-root-MuiButton-root"
+        href="/register"
+        tabindex="0"
+      >
+        Register
+        <span
+          class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+        />
+      </a>
     </div>
   </header>
   <div

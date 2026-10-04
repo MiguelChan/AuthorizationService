@@ -60,7 +60,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
             .antMatchers(HttpMethod.POST, "/api/sign-up").permitAll()
             .antMatchers(HttpMethod.GET, "/api/ping", "/api/deep_ping").permitAll()
-            .antMatchers(HttpMethod.GET, "/", "/login/**", "/index.html", "/static/**",
+            .antMatchers(HttpMethod.GET, "/", "/login/**", "/register", "/index.html", "/static/**",
                 "/favicon.ico", "/manifest.json", "/robots.txt").permitAll()
             .antMatchers("/error").permitAll()
             .anyRequest().authenticated()
