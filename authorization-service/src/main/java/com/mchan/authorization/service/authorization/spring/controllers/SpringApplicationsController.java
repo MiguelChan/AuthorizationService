@@ -1,5 +1,6 @@
 package com.mchan.authorization.service.authorization.spring.controllers;
 
+import com.mchan.authorization.lib.dtos.ClientCredentials;
 import com.mchan.authorization.lib.dtos.CreateApplicationRequest;
 import com.mchan.authorization.lib.dtos.CreateApplicationResponse;
 import com.mchan.authorization.lib.dtos.DeactivateApplicationResponse;
@@ -7,6 +8,7 @@ import com.mchan.authorization.lib.dtos.UpdateApplicationRequest;
 import com.mchan.authorization.lib.dtos.UpdateApplicationResponse;
 import com.mchan.authorization.lib.models.Application;
 import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
+import com.mchan.authorization.service.authorization.components.ClientCredentialsComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
@@ -14,9 +16,11 @@ import com.mchan.authorization.service.authorization.controllers.ApplicationsCon
 import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,6 +42,7 @@ public class SpringApplicationsController implements ApplicationsController {
     private final UpdateApplicationComponent updateApplicationComponent;
     private final AuthenticationFacade authenticationFacade;
     private final ApplicationOwnershipComponent applicationOwnershipComponent;
+    private final ClientCredentialsComponent clientCredentials;
 
     /**
      * .
@@ -57,14 +62,16 @@ public class SpringApplicationsController implements ApplicationsController {
                                         DeleteApplicationComponent deleteApplicationComponent,
                                         UpdateApplicationComponent updateApplicationComponent,
                                         AuthenticationFacade authenticationFacade,
-                                        ApplicationOwnershipComponent applicationOwnershipComponent) {
+                                        ApplicationOwnershipComponent applicationOwnershipComponent, ClientCredentialsComponent clientCredentials) {
         this.createApplicationComponent = createApplicationComponent;
         this.deactivateApplicationComponent = deleteApplicationComponent;
         this.updateApplicationComponent = updateApplicationComponent;
         this.authenticationFacade = authenticationFacade;
         this.applicationOwnershipComponent = applicationOwnershipComponent;
+        this.clientCredentials = clientCredentials;
     }
 
+    @Transactional
     @PostMapping("/applications")
     @Override
     public CreateApplicationResponse createApplication(@RequestBody CreateApplicationRequest request) {
@@ -78,8 +85,18 @@ public class SpringApplicationsController implements ApplicationsController {
             .build();
         try {
             int applicationId = createApplicationComponent.createApplication(ownedRequest);
+            ClientCredentials issued = clientCredentials.issue(applicationId);
+            org.springframework.web.context.request.ServletRequestAttributes attributes =
+                (org.springframework.web.context.request.ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletResponse response = attributes.getResponse();
+                response.setHeader("Cache-Control", "no-store");
+                response.setHeader("Pragma", "no-cache");
+            }
             return CreateApplicationResponse.builder()
                 .applicationId(applicationId)
+                .clientId(issued.getClientId())
+                .clientSecret(issued.getClientSecret())
                 .build();
         } catch (InvalidArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

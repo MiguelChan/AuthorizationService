@@ -16,6 +16,9 @@ import lombok.NoArgsConstructor;
 public class CreateApplicationResponse extends BaseResponse {
 
     private int applicationId;
+    private String clientId;
+    @lombok.ToString.Exclude
+    private String clientSecret;
 
     /**
      * .
@@ -25,9 +28,11 @@ public class CreateApplicationResponse extends BaseResponse {
      * @param applicationId .
      */
     @Builder
-    public CreateApplicationResponse(String message, int applicationId) {
+    public CreateApplicationResponse(String message, int applicationId, String clientId, String clientSecret) {
         super(message);
         this.applicationId = applicationId;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
     }
 
 }
