@@ -3,7 +3,7 @@ import {
   BrowserRouter, Route, Routes,
 } from 'react-router-dom';
 import { ProfileContext, ProfileState } from '../Context';
-import { LandingPage, LogInPage, ProfilePage } from '../Pages';
+import { LandingPage, LogInPage, ProfilePage, SignUpPage } from '../Pages';
 
 const Application: React.FunctionComponent = () => {
 
@@ -24,6 +24,7 @@ const Application: React.FunctionComponent = () => {
       <Routes>
         <Route path='/' element={getLandingPage()} />
         <Route path='/login' element={<LogInPage />} />
+        <Route path='/register' element={<SignUpPage />} />
       </Routes>
     </BrowserRouter>
   );

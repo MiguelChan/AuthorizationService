@@ -101,6 +101,7 @@ public class WebSecurityConfigTests {
         mvc.perform(get("/api/deep_ping")).andExpect(status().isOk());
         mvc.perform(get("/")).andExpect(status().isOk());
         mvc.perform(get("/login")).andExpect(status().isOk());
+        mvc.perform(get("/register")).andExpect(status().isOk());
         // Missing static files may return 404, but must not trigger authentication.
         mvc.perform(get("/static/missing.js")).andExpect(status().isNotFound());
     }

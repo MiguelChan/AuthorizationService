@@ -17,7 +17,8 @@ public class CatchAllController {
      */
     @RequestMapping(value = {
         "/",
-        "/login/**"
+        "/login/**",
+        "/register"
     })
     public String index() {
         return "index.html";

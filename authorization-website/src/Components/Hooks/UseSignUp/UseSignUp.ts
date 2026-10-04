@@ -2,68 +2,44 @@ import React from 'react';
 import { apiClient } from '../../../Clients';
 import { SignUpRequest, SignUpResponse } from '../../../Models';
 
-export type SignUpApiFn = (signUpRequest: SignUpRequest) => Promise<SignUpResponse>;
-
-export type OnSignUpRequestedListener = (
-  firstName: string, 
-  lastName: string, 
-  phoneNumber: string, 
-  emailAddress: string, 
-  password: string,
-) => void;
-
+export type SignUpApiFn = (request: SignUpRequest) => Promise<SignUpResponse>;
+export type OnSignUpRequestedListener = (firstName: string, lastName: string,
+  phoneNumber: string, emailAddress: string, password: string) => void;
 export interface SignUpState {
   isCreatingAccount: boolean;
   isProfileCreated: boolean;
   hasError: boolean;
   onSignUpRequested: OnSignUpRequestedListener;
 }
-
 export type UseSignUp = (signUpApiFn: SignUpApiFn) => SignUpState;
 
 export function useSignUp(signUpApiFn: SignUpApiFn = apiClient.signUp): SignUpState {
-  const [isCreatingAccount, setIsCreatingAccount] = React.useState<boolean>(false);
-  const [signUpRequest, setSignUpRequest] = React.useState<SignUpRequest>();
-  const [isProfileCreated, setProfileCreated] = React.useState<boolean>(false);
-  const [hasError, setError] = React.useState<boolean>(false);
+  const [isCreatingAccount, setCreating] = React.useState(false);
+  const [isProfileCreated, setCreated] = React.useState(false);
+  const [hasError, setError] = React.useState(false);
+  const pending = React.useRef(false);
+  const mounted = React.useRef(true);
+  React.useEffect(() => () => { mounted.current = false; }, []);
 
-  React.useEffect(() => {
-    if (!isCreatingAccount) {
-      return;
-    }
-
-    signUpApiFn(signUpRequest!).then((response: SignUpResponse) => {
-      setProfileCreated(response.profileId !== undefined && response.profileId !== null);
-    }).catch((error: any) => {
-      setProfileCreated(false);
-      setError(true);
-    }).finally(() => {
-      setIsCreatingAccount(false);
-      setSignUpRequest(undefined);
-    });
-  }, [signUpRequest, isCreatingAccount]);
-
-  const onSignUpRequested = (
-    firstName: string, 
-    lastName: string, 
-    phoneNumber: string, 
-    emailAddress: string, 
-    password: string,
-  ): void => {
-    setSignUpRequest({
-      firstName,
-      lastName,
-      emailAddress,
-      phoneNumber,
-      password,
-    });
-    setIsCreatingAccount(true);
+  const onSignUpRequested: OnSignUpRequestedListener = (firstName, lastName, phoneNumber, emailAddress, password) => {
+    if (pending.current) return;
+    pending.current = true;
+    setCreating(true);
+    setError(false);
+    setCreated(false);
+    signUpApiFn({ firstName, lastName, phoneNumber, emailAddress, password })
+      .then(response => {
+        if (mounted.current) {
+          const created = Boolean(response.profileId);
+          setCreated(created);
+          setError(!created);
+        }
+      })
+      .catch(() => { if (mounted.current) setError(true); })
+      .finally(() => {
+        pending.current = false;
+        if (mounted.current) setCreating(false);
+      });
   };
-
-  return {
-    isCreatingAccount,
-    hasError,
-    isProfileCreated,
-    onSignUpRequested,
-  };
+  return { isCreatingAccount, isProfileCreated, hasError, onSignUpRequested };
 }
