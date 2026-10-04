@@ -13,8 +13,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.mchan.authorization.lib.dtos.ClientCredentials;
 import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
+import com.mchan.authorization.service.authorization.components.ClientCredentialsComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
@@ -52,6 +54,8 @@ public class WebSecurityConfigTests {
 
     @Autowired
     private MockMvc mvc;
+    @MockBean
+    private ClientCredentialsComponent clientCredentials;
     @MockBean
     private CreateApplicationComponent createApplicationComponent;
     @MockBean

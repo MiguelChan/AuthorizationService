@@ -11,9 +11,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.mchan.authorization.lib.dtos.ClientCredentials;
 import com.mchan.authorization.lib.dtos.CreateApplicationRequest;
 import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
+import com.mchan.authorization.service.authorization.components.ClientCredentialsComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
@@ -42,6 +44,8 @@ public class ApplicationOwnershipHttpTests {
     @Autowired
     private MockMvc mvc;
     @MockBean
+    private ClientCredentialsComponent clientCredentials;
+    @MockBean
     private CreateApplicationComponent createApplicationComponent;
     @MockBean
     private DeleteApplicationComponent deleteApplicationComponent;
@@ -52,6 +56,7 @@ public class ApplicationOwnershipHttpTests {
 
     @Test
     public void create_should_useTheAuthenticatedOwnerWhenProfileIdIsOmitted() throws Exception {
+        when(clientCredentials.issue(org.mockito.ArgumentMatchers.anyInt())).thenReturn(new ClientCredentials("client", "secret", 1));
         when(createApplicationComponent.createApplication(any())).thenReturn(7);
         mvc.perform(post("/api/applications").with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
             .content("{\"application\":{\"appName\":\"example\"}}"))

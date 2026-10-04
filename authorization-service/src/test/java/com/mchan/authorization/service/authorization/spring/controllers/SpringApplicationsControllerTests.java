@@ -8,6 +8,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.mchan.authorization.lib.dtos.ClientCredentials;
 import com.mchan.authorization.lib.dtos.CreateApplicationRequest;
 import com.mchan.authorization.lib.dtos.CreateApplicationResponse;
 import com.mchan.authorization.lib.dtos.DeactivateApplicationResponse;
@@ -16,6 +17,7 @@ import com.mchan.authorization.lib.dtos.UpdateApplicationResponse;
 import com.mchan.authorization.lib.models.Application;
 import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
+import com.mchan.authorization.service.authorization.components.ClientCredentialsComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
@@ -46,6 +48,8 @@ public class SpringApplicationsControllerTests {
     @Mock
     private AuthenticationFacade authenticationFacade;
     @Mock
+    private ClientCredentialsComponent clientCredentials;
+    @Mock
     private ApplicationOwnershipComponent applicationOwnershipComponent;
 
     private SpringApplicationsController appsController;
@@ -56,7 +60,7 @@ public class SpringApplicationsControllerTests {
     @BeforeEach
     public void setup() {
         appsController = new SpringApplicationsController(createApplicationComponent, deleteApplicationComponent, updateApplicationComponent,
-            authenticationFacade, applicationOwnershipComponent);
+            authenticationFacade, applicationOwnershipComponent, clientCredentials);
         when(authenticationFacade.getAuthenticationToken()).thenReturn(EntitiesAuthenticationToken.builder()
             .principal("owner").credentials("test-password").profile(Profile.builder().profileId("owner-profile").build()).build());
     }
@@ -67,6 +71,7 @@ public class SpringApplicationsControllerTests {
         CreateApplicationRequest expectedRequest = EnhancedRandom.random(CreateApplicationRequest.class);
         expectedRequest.setProfileId("owner-profile");
         when(createApplicationComponent.createApplication(any())).thenReturn(expectedAppId);
+        when(clientCredentials.issue(expectedAppId)).thenReturn(new ClientCredentials("client", "secret", 1));
 
         CreateApplicationResponse response = appsController.createApplication(expectedRequest);
 

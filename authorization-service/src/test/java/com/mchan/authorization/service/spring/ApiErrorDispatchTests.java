@@ -6,8 +6,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import com.mchan.authorization.lib.dtos.ClientCredentials;
 import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
+import com.mchan.authorization.service.authorization.components.ClientCredentialsComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
@@ -51,6 +53,8 @@ public class ApiErrorDispatchTests {
 
     @Autowired
     private TestRestTemplate rest;
+    @MockBean
+    private ClientCredentialsComponent clientCredentials;
     @MockBean
     private CreateApplicationComponent createApplicationComponent;
     @MockBean

@@ -11,10 +11,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.mchan.authorization.lib.dtos.ClientCredentials;
 import com.mchan.authorization.lib.models.AppType;
 import com.mchan.authorization.lib.models.Profile;
 import com.mchan.authorization.service.authorization.components.ApplicationInputValidator;
 import com.mchan.authorization.service.authorization.components.ApplicationOwnershipComponent;
+import com.mchan.authorization.service.authorization.components.ClientCredentialsComponent;
 import com.mchan.authorization.service.authorization.components.CreateApplicationComponent;
 import com.mchan.authorization.service.authorization.components.DeleteApplicationComponent;
 import com.mchan.authorization.service.authorization.components.UpdateApplicationComponent;
@@ -50,6 +52,8 @@ public class ApplicationInputHttpTests {
     @Autowired
     private MockMvc mvc;
     @MockBean
+    private ClientCredentialsComponent clientCredentials;
+    @MockBean
     private ApplicationDao applicationDao;
     @MockBean
     private ProfileDao profileDao;
@@ -65,6 +69,7 @@ public class ApplicationInputHttpTests {
     @ParameterizedTest
     @ValueSource(strings = {"Service", "WebService"})
     public void supportedType_should_reachPersistence(String value) throws Exception {
+        when(clientCredentials.issue(org.mockito.ArgumentMatchers.anyInt())).thenReturn(new ClientCredentials("client", "secret", 1));
         when(profileDao.getProfile("owner")).thenReturn(ProfileEntity.builder().profileId("owner").build());
         when(applicationDao.createApplication(any())).thenReturn(7);
         mvc.perform(post("/api/applications").with(owner()).contentType(MediaType.APPLICATION_JSON)
