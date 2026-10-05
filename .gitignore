@@ -258,3 +258,7 @@ gradle-app.setting
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,mac,unix,linux,intellij,java,maven,gradle,spring,idea
 functional-tests/src/generated/**/*
+
+# Python receiving-service example
+__pycache__/
+*.py[cod]
