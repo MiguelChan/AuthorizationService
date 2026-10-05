@@ -60,3 +60,13 @@ Example application payload:
   }
 }
 ```
+
+## Service-to-service authorization
+
+1. [Issue and rotate application client credentials](docs/client-credentials.md).
+2. [Register receiving endpoints and actions](docs/application-endpoints.md).
+3. [Grant directed access between applications](docs/directed-grants.md).
+4. [Issue scoped OAuth tokens and enforce them in a receiving service](docs/oauth-client-credentials.md).
+
+Production requires an explicit `OAUTH_ISSUER` and HTTPS. The development profile
+allows HTTP only on loopback; see the OAuth deployment configuration.
