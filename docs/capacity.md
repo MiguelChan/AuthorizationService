@@ -39,9 +39,9 @@ use and do not promise immunity to distributed denial of service.
 Production requires HTTPS; dev must be explicitly selected for local HTTP. A
 verified direct TLS server is used below. Provide external secrets, exact CORS
 origins, migration/runtime database roles and deployment-specific trusted ingress.
-Do not grant the application DDL rights. Expired token rows and login history still
-need an approved [retention policy](retention-proposal.md); no deletion scheduler
-is silently installed.
+Do not grant the application DDL rights. The subsequent approved
+[retention layer](retention-proposal.md) prunes expired tokens and login history
+older than 30 days in fixed batches and provides an explicit disable switch.
 
 ## Reproduce safely
 
@@ -57,7 +57,7 @@ python3 tools/validation/run.py --host-app --app-cpus 8
 The first command runs the existing backend/frontend release checks. Generated
 legacy TestNG tests are compiled but skipped; this is not an executed E2E claim.
 The Python harness separately tests the packaged jar and an actual receiving
-process with disposable PostgreSQL, applying V1–V10 in numeric order.
+process with disposable PostgreSQL, applying all committed migrations in numeric order (V1–V11 with retention).
 
 Default restricted stack: app 2 CPU/768 MiB, database 1 CPU/512 MiB, swap disabled, PID limits 128, non-root/read-only application, dropped capabilities,
 no-new-privileges and DML-only runtime role. The Docker VM used here has **two CPU
@@ -96,7 +96,7 @@ enables extra logging and can alter latency; final measurements leave it off.
 
 ## Measured results and practical limits
 
-The sanitized [measurement record](benchmarks/2026-10-06.json) records the final jar,
+The sanitized [measurement record](benchmarks/2026-10-06.json) records the capacity-layer jar before retention,
 resources, all phases and errors. Results are local observations, not production
 capacity or a long-duration reliability guarantee.
 
