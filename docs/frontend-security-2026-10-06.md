@@ -82,3 +82,47 @@ The main app chunk is approximately 505 kB minified / 165 kB gzip. The build kee
 its size warning visible; route splitting remains a separate performance change.
 Packaged-browser registration, login and session checks are recorded in the next
 layer rather than inferred from unit test or compilation results.
+
+## Server-derived browser session layer
+
+The old ProfileContext parsed ProfileKey at module initialization and mutated a
+plain object after login. A Chrome run against the actual packaged jar reproduced
+three defects: a forged stored identity appeared while GET /api/profile returned
+401; malformed JSON left an empty page; and successful login did not refresh the
+toolbar. These are UI session/state defects, not demonstrated backend authorization
+bypasses. The server denied the forged profile throughout the reproduction.
+
+ProfileProvider now hydrates in-memory identity from the cookie-authenticated
+GET /api/profile, removes the legacy key without parsing it and revalidates on
+window focus. Probes have a five-second request timeout and one active request;
+unmount and successful login abort older probes. Revision/lifecycle guards stop
+late responses from replacing a newer login. Probe failures clear the displayed
+identity. No profile data or authentication token is written to browser storage.
+The login effect depends on the profile and stable setter, so context updates
+render the toolbar without causing a setter/render loop.
+
+Validation of this layer:
+
+- Serial release: 195 backend tests without failures/errors/skips, 32 frontend
+  tests, six snapshots, TypeScript/hook lint, jar packaging and Storybook passed.
+  The unchanged macOS IPv6 test override remains local only.
+- Full fresh npm audit, including Playwright 1.63.0: zero findings at all severities.
+- Four actual Chrome scenarios passed: forged and malformed storage; complete
+  registration/login/retry/reload/profile edit/logout; and exact CORS allowlist.
+  Missing CSRF returned 403; fresh CSRF allowed mutations. Logout returned 204,
+  the following profile read returned 401 and the UI cleared the old identity.
+  The allowed cross-origin preflight returned its exact allow-origin and credential
+  headers; denied preflight/real requests returned 403. The observed browser fetch
+  sent the unconfigured Origin and could not read the response.
+- The disposable database confirmed exactly one registered account. Runtime DDL
+  was denied. The fixture removed its browser, JVM descendants and container after
+  successful and failed runs. CI now runs this fixture serially after retention.
+
+Reproduce with the pinned Gradle runtime and tools/validation/browser.py after
+release; see authorization-website/README.md. PostgreSQL is limited to 1 CPU,
+512 MiB, no additional swap, 128 PIDs and 20 connections. The host JVM uses a
+256 MiB maximum heap and ActiveProcessorCount=2 (a JVM hint, not an OS CPU quota).
+The fixture accepts no existing database/target and binds dev HTTP to loopback.
+It does not measure production TLS, sustained/mixed load or multi-instance session
+sharing. Those are separate checks from this frontend correction. The main app
+chunk still produces the documented size warning.

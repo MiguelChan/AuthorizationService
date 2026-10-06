@@ -9,6 +9,7 @@ class APIClient {
     axios.defaults.withCredentials = true;
     this.logIn = this.logIn.bind(this);
     this.signUp = this.signUp.bind(this);
+    this.getProfile = this.getProfile.bind(this);
   }
 
   public async logIn(username: string, password: string): Promise<ProfileDto> {
@@ -55,6 +56,11 @@ class APIClient {
       });
     });
   }
+  public async getProfile(signal?: AbortSignal): Promise<ProfileDto> {
+    const response = await axios.get<ProfileDto>('/api/profile', { signal, timeout: 5000 });
+    return response.data;
+  }
+
   private async csrfHeaders(): Promise<Record<string, string>> {
     const response = await axios.get<{token: string; headerName: string}>('/api/csrf');
     return { [response.data.headerName]: response.data.token };

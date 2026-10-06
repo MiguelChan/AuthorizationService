@@ -14,16 +14,13 @@ export const LogInPage: React.FunctionComponent = () => {
 
   const useLogInState: UseLogInState = useLogIn();
 
+  const { currentProfile } = useLogInState;
+  const { setCurrentProfile } = profileContext;
   React.useEffect(() => {
-    const {
-      currentProfile,
-    } = useLogInState;
-
     if (currentProfile !== undefined) {
-      profileContext.setCurrentProfile(currentProfile);
+      setCurrentProfile(currentProfile);
     }
-
-  }, [profileContext, useLogInState]);
+  }, [currentProfile, setCurrentProfile]);
 
   const renderErrorMessage = (): React.ReactElement => {
     if (useLogInState.hasError) {

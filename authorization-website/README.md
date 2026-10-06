@@ -1,44 +1,54 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+# Authorization website
 
-## Available Scripts
+The React SPA uses Vite, Vitest and Storybook. Gradle downloads pinned Node 24.21.0
+LTS/npm 11.21.0 and runs npm ci with strict peer resolution. Use those versions
+when running npm commands directly.
 
-In the project directory, you can run:
+From the repository root:
 
-### `npm start`
+```sh
+./gradlew release -Pskip-functional-tests --no-daemon --max-workers=1
+./gradlew :authorization-website:buildStorybook --no-daemon --max-workers=1
+python3 tools/validation/browser.py
+```
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+The release checks TypeScript, React hook lint, the full dependency audit and tests,
+then packages build/ into the Spring jar. Browser tests require Java 25, Docker
+and installed Google Chrome. They use the built jar, a disposable PostgreSQL with
+1 CPU/512 MiB and a DML-only runtime role. The JVM has a 256 MiB maximum heap and
+an ActiveProcessorCount hint of 2; it has no host OS CPU/RAM quota. The fixture
+accepts no existing target/database and removes its processes/browser/container on
+success or failure. Evidence logs are retained in the printed temporary directory.
+Loopback dev HTTP is used here; production TLS validation is separate in
+../tools/validation/run.py.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+From this directory with the pinned Node/npm available:
 
-### `npm test`
+```sh
+npm ci
+npm start
+npm test
+npm run test:watch
+npm run test:coverage
+npm run build
+npm run audit
+npm run storybook
+npm run build-storybook
+```
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Development binds to 127.0.0.1:3000 and proxies fixed API/OAuth/login routes to the
+development backend at localhost:8094. GET /login serves the current SPA; POST
+/login reaches Spring. Storybook uses localhost:6006. Neither server runs in the
+deployed jar. Compiled resources retain /static/** URLs and source maps are not
+published. build-reports/browser-packages.json inventories emitted app modules
+outside the public assets; Storybook builds do not replace that report.
 
-### `npm run build`
+Profile identity is kept in memory and hydrated from GET /api/profile using the
+server cookie session. Startup and focus probes have a five-second timeout, allow
+one active request and abort on unmount/new login. The legacy ProfileKey is removed
+without parsing it; no profile data or authentication token is persisted in browser
+storage. Session failures clear the displayed profile. Backend authorization remains
+the boundary for protected operations. Login/registration obtain fresh CSRF headers.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+See ../docs/frontend-security-2026-10-06.md for dependency reachability, reproduced
+bugs, validation evidence and the remaining main-chunk size warning.
