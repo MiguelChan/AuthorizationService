@@ -1,0 +1,1484 @@
+{
+  "date": "2026-10-06",
+  "jar_sha256": "afabbef313177d7bdca1415f9db0ae5b490623a70e4f91397c978f485fc21876",
+  "tests": {
+    "tests": 193,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "workload": "Recipient-authenticated HTTPS opaque token introspection, one live permission, reused token; owner catalog contains 1000 entries",
+  "profiles": {
+    "host-4": {
+      "profile": "host-4",
+      "measurements": {
+        "ramp-100": {
+          "completed": 500,
+          "completed_rps": 100.07514476495659,
+          "dropped": 0,
+          "elapsed_seconds": 4.996245583,
+          "error_fraction": 0,
+          "max_inflight": 2,
+          "mode": "open-loop",
+          "offered_rps": 100,
+          "p50_ms": 3.927,
+          "p95_ms": 5.601,
+          "p99_ms": 6.238,
+          "scheduled": 500,
+          "statuses": {
+            "200": 500
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 500
+        },
+        "ramp-500": {
+          "completed": 5000,
+          "completed_rps": 500.04748991015475,
+          "dropped": 0,
+          "elapsed_seconds": 9.999050292,
+          "error_fraction": 0,
+          "max_inflight": 193,
+          "mode": "open-loop",
+          "offered_rps": 500,
+          "p50_ms": 1.107,
+          "p95_ms": 291.521,
+          "p99_ms": 487.705,
+          "scheduled": 5000,
+          "statuses": {
+            "200": 5000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 5000
+        },
+        "target-1000": {
+          "completed": 60000,
+          "completed_rps": 1000.0002770834101,
+          "dropped": 0,
+          "elapsed_seconds": 59.999983375,
+          "error_fraction": 0,
+          "max_inflight": 85,
+          "mode": "open-loop",
+          "offered_rps": 1000,
+          "p50_ms": 0.8,
+          "p95_ms": 1.055,
+          "p99_ms": 4.626,
+          "scheduled": 60000,
+          "statuses": {
+            "200": 60000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 60000
+        },
+        "burst-1000": {
+          "completed": 1000,
+          "completed_rps": 3860.015249993849,
+          "dropped": 0,
+          "elapsed_seconds": 0.259066334,
+          "error_fraction": 0,
+          "max_inflight": 1000,
+          "mode": "simultaneous-burst",
+          "offered_rps": 1000,
+          "p50_ms": 147.751,
+          "p95_ms": 254.688,
+          "p99_ms": 258.47,
+          "scheduled": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 1000
+        }
+      },
+      "security": {
+        "checks": [
+          {
+            "check": "runtime_role_cannot_execute_ddl",
+            "passed": true
+          },
+          {
+            "check": "csrf_0",
+            "status": 200
+          },
+          {
+            "check": "registration_0",
+            "status": 200
+          },
+          {
+            "check": "csrf_1",
+            "status": 200
+          },
+          {
+            "check": "registration_1",
+            "status": 200
+          },
+          {
+            "check": "csrf_2",
+            "status": 200
+          },
+          {
+            "check": "registration_2",
+            "status": 200
+          },
+          {
+            "check": "create_application_0",
+            "status": 200
+          },
+          {
+            "check": "create_application_1",
+            "status": 200
+          },
+          {
+            "check": "create_application_2",
+            "status": 200
+          },
+          {
+            "check": "register_resource",
+            "status": 200
+          },
+          {
+            "check": "target_owner_grants",
+            "status": 200
+          },
+          {
+            "check": "source_owner_cannot_manage_target",
+            "status": 403
+          },
+          {
+            "check": "bounded_page_limit",
+            "status": 400
+          },
+          {
+            "check": "negative_page_cursor",
+            "status": 400
+          },
+          {
+            "check": "scoped_token",
+            "status": 200
+          },
+          {
+            "check": "recipient_introspection",
+            "status": 200
+          },
+          {
+            "check": "wrong_recipient_no_metadata",
+            "status": 200
+          },
+          {
+            "check": "tampered_token_inactive",
+            "status": 200
+          },
+          {
+            "check": "service_bearer_cannot_become_admin",
+            "status": 401
+          },
+          {
+            "check": "metadata_limit",
+            "status": 400
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "oversized_oauth_body",
+            "status": 413
+          },
+          {
+            "check": "catalog_0",
+            "status": 200
+          },
+          {
+            "check": "catalog_1",
+            "status": 200
+          },
+          {
+            "check": "catalog_2",
+            "status": 200
+          },
+          {
+            "check": "first_keyset_page",
+            "status": 200
+          },
+          {
+            "check": "second_keyset_page",
+            "status": 200
+          },
+          {
+            "check": "browser_csrf",
+            "status": 200
+          },
+          {
+            "check": "browser_login_without_csrf",
+            "status": 403
+          },
+          {
+            "check": "browser_login",
+            "status": 200
+          },
+          {
+            "check": "session_read",
+            "status": 200
+          },
+          {
+            "check": "cookie_mutation_without_csrf",
+            "status": 403
+          },
+          {
+            "check": "basic_plus_cookie_does_not_bypass_csrf",
+            "status": 403
+          },
+          {
+            "check": "same_site_attacker_cors",
+            "status": 403
+          },
+          {
+            "check": "sql_injection_username",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "five_failures_block_correct_password",
+            "status": 401
+          },
+          {
+            "check": "incorrect_legacy_secret",
+            "status": 401
+          },
+          {
+            "check": "legacy_secret_upgrade_preserves_token",
+            "status": 200
+          },
+          {
+            "check": "chunked_oversized_body",
+            "status": 413
+          },
+          {
+            "check": "duplicate_authorization",
+            "status": 401
+          },
+          {
+            "check": "duplicate_form_parameter",
+            "status": 400
+          },
+          {
+            "check": "unsupported_password_grant",
+            "status": 400
+          },
+          {
+            "check": "trickled_upload_has_absolute_deadline",
+            "status": 408
+          },
+          {
+            "check": "endpoint_quota",
+            "status": 400
+          },
+          {
+            "check": "default_page_remains_bounded",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_missing_bearer",
+            "status": 401
+          },
+          {
+            "check": "receiving_service_allows_exact_permission",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_tampered_token",
+            "status": 401
+          },
+          {
+            "check": "revoke_after_load",
+            "status": 204
+          },
+          {
+            "check": "revocation_after_load",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_rejects_revoked_grant",
+            "status": 401
+          },
+          {
+            "check": "regrant_increases_version",
+            "status": 200
+          },
+          {
+            "check": "regrant_does_not_restore_old_token",
+            "status": 200
+          },
+          {
+            "check": "fresh_token_after_regrant",
+            "status": 200
+          },
+          {
+            "check": "fresh_token_active",
+            "status": 200
+          },
+          {
+            "check": "foreign_source_cannot_revoke",
+            "status": 200
+          },
+          {
+            "check": "foreign_revocation_does_not_change_token",
+            "status": 200
+          },
+          {
+            "check": "source_revokes_token",
+            "status": 200
+          },
+          {
+            "check": "token_revocation_is_live",
+            "status": 200
+          },
+          {
+            "check": "token_for_expiry_check",
+            "status": 200
+          },
+          {
+            "check": "expired_token_inactive",
+            "status": 200
+          },
+          {
+            "check": "token_before_recipient_rotation",
+            "status": 200
+          },
+          {
+            "check": "recipient_credential_rotation",
+            "status": 200
+          },
+          {
+            "check": "old_recipient_secret_rejected",
+            "status": 401
+          },
+          {
+            "check": "recipient_rotation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "token_before_source_rotation",
+            "status": 200
+          },
+          {
+            "check": "new_recipient_version_works",
+            "status": 200
+          },
+          {
+            "check": "source_credential_rotation",
+            "status": 200
+          },
+          {
+            "check": "source_rotation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "token_before_endpoint_deactivation",
+            "status": 200
+          },
+          {
+            "check": "endpoint_deactivation",
+            "status": 204
+          },
+          {
+            "check": "endpoint_deactivation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "issuance_budget_returns_retry_after",
+            "status": 429
+          }
+        ],
+        "resources": {
+          "app_cpus": 4,
+          "app_memory_mib": 768,
+          "db_cpus": 1,
+          "db_memory_mib": 512,
+          "bcrypt_cost": 11,
+          "https_verified": true,
+          "runtime_role_ddl": false,
+          "gc": "G1",
+          "host_app": true,
+          "app_os_quota_enforced": false,
+          "initial_and_max_heap_ram_percent": 60
+        },
+        "http_checks": 88,
+        "load_failures": [
+          "ramp-500",
+          "burst-1000"
+        ]
+      },
+      "cleanup": {
+        "server_exit_code": 143,
+        "logs_contain_credentials": false,
+        "receiver_exit_code": -15,
+        "stats_exit_code": 0,
+        "database_removed": true,
+        "network_removed": true
+      },
+      "docker": {
+        "cpus": 2,
+        "memory_bytes": 4107407360,
+        "os": "Docker Desktop"
+      },
+      "containers": [
+        {
+          "name": "/auth-capacity-db-0a8a572a189a",
+          "image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+          "nano_cpus": 1000000000,
+          "memory_bytes": 536870912,
+          "pids_limit": 128,
+          "read_only_root": false
+        }
+      ],
+      "local_evidence_directory": "/var/folders/cn/6mnydkr51f16kzkdv73788rr0000gn/T/authorization-validation-rle_1h16"
+    },
+    "restricted-2": {
+      "profile": "restricted-2",
+      "measurements": {
+        "ramp-100": {
+          "completed": 500,
+          "completed_rps": 100.15305891228269,
+          "dropped": 0,
+          "elapsed_seconds": 4.99235875,
+          "error_fraction": 0,
+          "max_inflight": 2,
+          "mode": "open-loop",
+          "offered_rps": 100,
+          "p50_ms": 3.017,
+          "p95_ms": 4.9,
+          "p99_ms": 8.901,
+          "scheduled": 500,
+          "statuses": {
+            "200": 500
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 500
+        },
+        "ramp-500": {
+          "completed": 5000,
+          "completed_rps": 481.44652776275746,
+          "dropped": 0,
+          "elapsed_seconds": 9.999033584,
+          "error_fraction": 0.0372,
+          "max_inflight": 473,
+          "mode": "open-loop",
+          "offered_rps": 500,
+          "p50_ms": 1.047,
+          "p95_ms": 1001.176,
+          "p99_ms": 1139.119,
+          "scheduled": 5000,
+          "statuses": {
+            "200": 4814,
+            "503": 186
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 186,
+          "valid_authorized": 4814
+        },
+        "target-1000": {
+          "completed": 60000,
+          "completed_rps": 998.9545653555576,
+          "dropped": 0,
+          "elapsed_seconds": 59.999725792,
+          "error_fraction": 0.00105,
+          "max_inflight": 1000,
+          "mode": "open-loop",
+          "offered_rps": 1000,
+          "p50_ms": 0.714,
+          "p95_ms": 1.697,
+          "p99_ms": 589.428,
+          "scheduled": 60000,
+          "statuses": {
+            "200": 59937,
+            "503": 63
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 63,
+          "valid_authorized": 59937
+        },
+        "burst-1000": {
+          "completed": 1000,
+          "completed_rps": 3427.019971589456,
+          "dropped": 0,
+          "elapsed_seconds": 0.291798708,
+          "error_fraction": 0,
+          "max_inflight": 1000,
+          "mode": "simultaneous-burst",
+          "offered_rps": 1000,
+          "p50_ms": 185.221,
+          "p95_ms": 281.975,
+          "p99_ms": 290.178,
+          "scheduled": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 1000
+        }
+      },
+      "security": {
+        "checks": [
+          {
+            "check": "runtime_role_cannot_execute_ddl",
+            "passed": true
+          },
+          {
+            "check": "csrf_0",
+            "status": 200
+          },
+          {
+            "check": "registration_0",
+            "status": 200
+          },
+          {
+            "check": "csrf_1",
+            "status": 200
+          },
+          {
+            "check": "registration_1",
+            "status": 200
+          },
+          {
+            "check": "csrf_2",
+            "status": 200
+          },
+          {
+            "check": "registration_2",
+            "status": 200
+          },
+          {
+            "check": "create_application_0",
+            "status": 200
+          },
+          {
+            "check": "create_application_1",
+            "status": 200
+          },
+          {
+            "check": "create_application_2",
+            "status": 200
+          },
+          {
+            "check": "register_resource",
+            "status": 200
+          },
+          {
+            "check": "target_owner_grants",
+            "status": 200
+          },
+          {
+            "check": "source_owner_cannot_manage_target",
+            "status": 403
+          },
+          {
+            "check": "bounded_page_limit",
+            "status": 400
+          },
+          {
+            "check": "negative_page_cursor",
+            "status": 400
+          },
+          {
+            "check": "scoped_token",
+            "status": 200
+          },
+          {
+            "check": "recipient_introspection",
+            "status": 200
+          },
+          {
+            "check": "wrong_recipient_no_metadata",
+            "status": 200
+          },
+          {
+            "check": "tampered_token_inactive",
+            "status": 200
+          },
+          {
+            "check": "service_bearer_cannot_become_admin",
+            "status": 401
+          },
+          {
+            "check": "metadata_limit",
+            "status": 400
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "oversized_oauth_body",
+            "status": 413
+          },
+          {
+            "check": "catalog_0",
+            "status": 200
+          },
+          {
+            "check": "catalog_1",
+            "status": 200
+          },
+          {
+            "check": "catalog_2",
+            "status": 200
+          },
+          {
+            "check": "first_keyset_page",
+            "status": 200
+          },
+          {
+            "check": "second_keyset_page",
+            "status": 200
+          },
+          {
+            "check": "browser_csrf",
+            "status": 200
+          },
+          {
+            "check": "browser_login_without_csrf",
+            "status": 403
+          },
+          {
+            "check": "browser_login",
+            "status": 200
+          },
+          {
+            "check": "session_read",
+            "status": 200
+          },
+          {
+            "check": "cookie_mutation_without_csrf",
+            "status": 403
+          },
+          {
+            "check": "basic_plus_cookie_does_not_bypass_csrf",
+            "status": 403
+          },
+          {
+            "check": "same_site_attacker_cors",
+            "status": 403
+          },
+          {
+            "check": "sql_injection_username",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "five_failures_block_correct_password",
+            "status": 401
+          },
+          {
+            "check": "incorrect_legacy_secret",
+            "status": 401
+          },
+          {
+            "check": "legacy_secret_upgrade_preserves_token",
+            "status": 200
+          },
+          {
+            "check": "chunked_oversized_body",
+            "status": 413
+          },
+          {
+            "check": "duplicate_authorization",
+            "status": 401
+          },
+          {
+            "check": "duplicate_form_parameter",
+            "status": 400
+          },
+          {
+            "check": "unsupported_password_grant",
+            "status": 400
+          },
+          {
+            "check": "trickled_upload_has_absolute_deadline",
+            "status": 408
+          },
+          {
+            "check": "endpoint_quota",
+            "status": 400
+          },
+          {
+            "check": "default_page_remains_bounded",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_missing_bearer",
+            "status": 401
+          },
+          {
+            "check": "receiving_service_allows_exact_permission",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_tampered_token",
+            "status": 401
+          },
+          {
+            "check": "revoke_after_load",
+            "status": 204
+          },
+          {
+            "check": "revocation_after_load",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_rejects_revoked_grant",
+            "status": 401
+          },
+          {
+            "check": "regrant_increases_version",
+            "status": 200
+          },
+          {
+            "check": "regrant_does_not_restore_old_token",
+            "status": 200
+          },
+          {
+            "check": "fresh_token_after_regrant",
+            "status": 200
+          },
+          {
+            "check": "fresh_token_active",
+            "status": 200
+          },
+          {
+            "check": "foreign_source_cannot_revoke",
+            "status": 200
+          },
+          {
+            "check": "foreign_revocation_does_not_change_token",
+            "status": 200
+          },
+          {
+            "check": "source_revokes_token",
+            "status": 200
+          },
+          {
+            "check": "token_revocation_is_live",
+            "status": 200
+          },
+          {
+            "check": "token_for_expiry_check",
+            "status": 200
+          },
+          {
+            "check": "expired_token_inactive",
+            "status": 200
+          },
+          {
+            "check": "token_before_recipient_rotation",
+            "status": 200
+          },
+          {
+            "check": "recipient_credential_rotation",
+            "status": 200
+          },
+          {
+            "check": "old_recipient_secret_rejected",
+            "status": 401
+          },
+          {
+            "check": "recipient_rotation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "token_before_source_rotation",
+            "status": 200
+          },
+          {
+            "check": "new_recipient_version_works",
+            "status": 200
+          },
+          {
+            "check": "source_credential_rotation",
+            "status": 200
+          },
+          {
+            "check": "source_rotation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "token_before_endpoint_deactivation",
+            "status": 200
+          },
+          {
+            "check": "endpoint_deactivation",
+            "status": 204
+          },
+          {
+            "check": "endpoint_deactivation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "issuance_budget_returns_retry_after",
+            "status": 429
+          }
+        ],
+        "resources": {
+          "app_cpus": 2,
+          "app_memory_mib": 768,
+          "db_cpus": 1,
+          "db_memory_mib": 512,
+          "bcrypt_cost": 11,
+          "https_verified": true,
+          "runtime_role_ddl": false,
+          "gc": "G1",
+          "host_app": false,
+          "app_os_quota_enforced": true,
+          "initial_and_max_heap_ram_percent": 60
+        },
+        "http_checks": 88,
+        "load_failures": [
+          "ramp-500",
+          "burst-1000"
+        ]
+      },
+      "cleanup": {
+        "receiver_exit_code": -15,
+        "stats_exit_code": 0,
+        "logs_contain_credentials": false,
+        "app_stopped": true,
+        "app_removed": true,
+        "database_removed": true,
+        "network_removed": true
+      },
+      "docker": {
+        "cpus": 2,
+        "memory_bytes": 4107407360,
+        "os": "Docker Desktop"
+      },
+      "containers": [
+        {
+          "name": "/auth-capacity-app-827b266d5709",
+          "image_id": "sha256:fcd7fd7b387f94bb2ac461478a7436ad8e349924c374ea8313919624dceae636",
+          "nano_cpus": 2000000000,
+          "memory_bytes": 805306368,
+          "pids_limit": 128,
+          "read_only_root": true
+        },
+        {
+          "name": "/auth-capacity-db-827b266d5709",
+          "image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+          "nano_cpus": 1000000000,
+          "memory_bytes": 536870912,
+          "pids_limit": 128,
+          "read_only_root": false
+        }
+      ],
+      "local_evidence_directory": "/var/folders/cn/6mnydkr51f16kzkdv73788rr0000gn/T/authorization-validation-_db18373"
+    },
+    "host-8": {
+      "profile": "host-8",
+      "measurements": {
+        "ramp-100": {
+          "completed": 500,
+          "completed_rps": 100.14725151125958,
+          "dropped": 0,
+          "elapsed_seconds": 4.99264825,
+          "error_fraction": 0,
+          "max_inflight": 2,
+          "mode": "open-loop",
+          "offered_rps": 100,
+          "p50_ms": 3.896,
+          "p95_ms": 5.523,
+          "p99_ms": 6.548,
+          "scheduled": 500,
+          "statuses": {
+            "200": 500
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 500
+        },
+        "ramp-500": {
+          "completed": 5000,
+          "completed_rps": 500.0379632822027,
+          "dropped": 0,
+          "elapsed_seconds": 9.999240792,
+          "error_fraction": 0,
+          "max_inflight": 153,
+          "mode": "open-loop",
+          "offered_rps": 500,
+          "p50_ms": 1.12,
+          "p95_ms": 255.157,
+          "p99_ms": 412.265,
+          "scheduled": 5000,
+          "statuses": {
+            "200": 5000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 5000
+        },
+        "target-1000": {
+          "completed": 60000,
+          "completed_rps": 1000.0001347333515,
+          "dropped": 0,
+          "elapsed_seconds": 59.999991916,
+          "error_fraction": 0,
+          "max_inflight": 110,
+          "mode": "open-loop",
+          "offered_rps": 1000,
+          "p50_ms": 0.792,
+          "p95_ms": 1.057,
+          "p99_ms": 3.702,
+          "scheduled": 60000,
+          "statuses": {
+            "200": 60000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 60000
+        },
+        "burst-1000": {
+          "completed": 1000,
+          "completed_rps": 3643.260991832264,
+          "dropped": 0,
+          "elapsed_seconds": 0.274479375,
+          "error_fraction": 0,
+          "max_inflight": 1000,
+          "mode": "simultaneous-burst",
+          "offered_rps": 1000,
+          "p50_ms": 140.177,
+          "p95_ms": 235.737,
+          "p99_ms": 273.725,
+          "scheduled": 1000,
+          "statuses": {
+            "200": 1000
+          },
+          "tls_verified": true,
+          "transport_errors": {},
+          "unexpected_errors": 0,
+          "valid_authorized": 1000
+        }
+      },
+      "security": {
+        "checks": [
+          {
+            "check": "runtime_role_cannot_execute_ddl",
+            "passed": true
+          },
+          {
+            "check": "csrf_0",
+            "status": 200
+          },
+          {
+            "check": "registration_0",
+            "status": 200
+          },
+          {
+            "check": "csrf_1",
+            "status": 200
+          },
+          {
+            "check": "registration_1",
+            "status": 200
+          },
+          {
+            "check": "csrf_2",
+            "status": 200
+          },
+          {
+            "check": "registration_2",
+            "status": 200
+          },
+          {
+            "check": "create_application_0",
+            "status": 200
+          },
+          {
+            "check": "create_application_1",
+            "status": 200
+          },
+          {
+            "check": "create_application_2",
+            "status": 200
+          },
+          {
+            "check": "register_resource",
+            "status": 200
+          },
+          {
+            "check": "target_owner_grants",
+            "status": 200
+          },
+          {
+            "check": "source_owner_cannot_manage_target",
+            "status": 403
+          },
+          {
+            "check": "bounded_page_limit",
+            "status": 400
+          },
+          {
+            "check": "negative_page_cursor",
+            "status": 400
+          },
+          {
+            "check": "scoped_token",
+            "status": 200
+          },
+          {
+            "check": "recipient_introspection",
+            "status": 200
+          },
+          {
+            "check": "wrong_recipient_no_metadata",
+            "status": 200
+          },
+          {
+            "check": "tampered_token_inactive",
+            "status": 200
+          },
+          {
+            "check": "service_bearer_cannot_become_admin",
+            "status": 401
+          },
+          {
+            "check": "metadata_limit",
+            "status": 400
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "basic_read_no_audit_write",
+            "status": 200
+          },
+          {
+            "check": "oversized_oauth_body",
+            "status": 413
+          },
+          {
+            "check": "catalog_0",
+            "status": 200
+          },
+          {
+            "check": "catalog_1",
+            "status": 200
+          },
+          {
+            "check": "catalog_2",
+            "status": 200
+          },
+          {
+            "check": "first_keyset_page",
+            "status": 200
+          },
+          {
+            "check": "second_keyset_page",
+            "status": 200
+          },
+          {
+            "check": "browser_csrf",
+            "status": 200
+          },
+          {
+            "check": "browser_login_without_csrf",
+            "status": 403
+          },
+          {
+            "check": "browser_login",
+            "status": 200
+          },
+          {
+            "check": "session_read",
+            "status": 200
+          },
+          {
+            "check": "cookie_mutation_without_csrf",
+            "status": 403
+          },
+          {
+            "check": "basic_plus_cookie_does_not_bypass_csrf",
+            "status": 403
+          },
+          {
+            "check": "same_site_attacker_cors",
+            "status": 403
+          },
+          {
+            "check": "sql_injection_username",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "failed_human_login",
+            "status": 401
+          },
+          {
+            "check": "five_failures_block_correct_password",
+            "status": 401
+          },
+          {
+            "check": "incorrect_legacy_secret",
+            "status": 401
+          },
+          {
+            "check": "legacy_secret_upgrade_preserves_token",
+            "status": 200
+          },
+          {
+            "check": "chunked_oversized_body",
+            "status": 413
+          },
+          {
+            "check": "duplicate_authorization",
+            "status": 401
+          },
+          {
+            "check": "duplicate_form_parameter",
+            "status": 400
+          },
+          {
+            "check": "unsupported_password_grant",
+            "status": 400
+          },
+          {
+            "check": "trickled_upload_has_absolute_deadline",
+            "status": 408
+          },
+          {
+            "check": "endpoint_quota",
+            "status": 400
+          },
+          {
+            "check": "default_page_remains_bounded",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_missing_bearer",
+            "status": 401
+          },
+          {
+            "check": "receiving_service_allows_exact_permission",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_tampered_token",
+            "status": 401
+          },
+          {
+            "check": "revoke_after_load",
+            "status": 204
+          },
+          {
+            "check": "revocation_after_load",
+            "status": 200
+          },
+          {
+            "check": "receiving_service_rejects_revoked_grant",
+            "status": 401
+          },
+          {
+            "check": "regrant_increases_version",
+            "status": 200
+          },
+          {
+            "check": "regrant_does_not_restore_old_token",
+            "status": 200
+          },
+          {
+            "check": "fresh_token_after_regrant",
+            "status": 200
+          },
+          {
+            "check": "fresh_token_active",
+            "status": 200
+          },
+          {
+            "check": "foreign_source_cannot_revoke",
+            "status": 200
+          },
+          {
+            "check": "foreign_revocation_does_not_change_token",
+            "status": 200
+          },
+          {
+            "check": "source_revokes_token",
+            "status": 200
+          },
+          {
+            "check": "token_revocation_is_live",
+            "status": 200
+          },
+          {
+            "check": "token_for_expiry_check",
+            "status": 200
+          },
+          {
+            "check": "expired_token_inactive",
+            "status": 200
+          },
+          {
+            "check": "token_before_recipient_rotation",
+            "status": 200
+          },
+          {
+            "check": "recipient_credential_rotation",
+            "status": 200
+          },
+          {
+            "check": "old_recipient_secret_rejected",
+            "status": 401
+          },
+          {
+            "check": "recipient_rotation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "token_before_source_rotation",
+            "status": 200
+          },
+          {
+            "check": "new_recipient_version_works",
+            "status": 200
+          },
+          {
+            "check": "source_credential_rotation",
+            "status": 200
+          },
+          {
+            "check": "source_rotation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "token_before_endpoint_deactivation",
+            "status": 200
+          },
+          {
+            "check": "endpoint_deactivation",
+            "status": 204
+          },
+          {
+            "check": "endpoint_deactivation_invalidates_token",
+            "status": 200
+          },
+          {
+            "check": "issuance_budget_returns_retry_after",
+            "status": 429
+          }
+        ],
+        "resources": {
+          "app_cpus": 8,
+          "app_memory_mib": 768,
+          "db_cpus": 1,
+          "db_memory_mib": 512,
+          "bcrypt_cost": 11,
+          "https_verified": true,
+          "runtime_role_ddl": false,
+          "gc": "G1",
+          "host_app": true,
+          "app_os_quota_enforced": false,
+          "initial_and_max_heap_ram_percent": 60
+        },
+        "http_checks": 88,
+        "load_failures": [
+          "ramp-500"
+        ]
+      },
+      "cleanup": {
+        "server_exit_code": 143,
+        "logs_contain_credentials": false,
+        "receiver_exit_code": -15,
+        "stats_exit_code": 0,
+        "database_removed": true,
+        "network_removed": true
+      },
+      "docker": {
+        "cpus": 2,
+        "memory_bytes": 4107407360,
+        "os": "Docker Desktop"
+      },
+      "containers": [
+        {
+          "name": "/auth-capacity-db-dd320e0d30a4",
+          "image_id": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+          "nano_cpus": 1000000000,
+          "memory_bytes": 536870912,
+          "pids_limit": 128,
+          "read_only_root": false
+        }
+      ],
+      "local_evidence_directory": "/var/folders/cn/6mnydkr51f16kzkdv73788rr0000gn/T/authorization-validation-0_183dgk"
+    }
+  }
+}

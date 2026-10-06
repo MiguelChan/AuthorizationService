@@ -74,6 +74,7 @@ public class CreateApplicationComponent {
         requireText(application.getAppName(), "Application name is required");
         requireText(application.getShortDescription(), "Short description is required");
         requireText(application.getRedirectUrl(), "Redirect URL is required");
+        inputValidator.validateMetadata(application);
         inputValidator.validateRedirectUrl(application.getRedirectUrl());
     }
 

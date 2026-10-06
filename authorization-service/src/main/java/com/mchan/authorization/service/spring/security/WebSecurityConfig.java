@@ -40,8 +40,8 @@ public class WebSecurityConfig {
      */
     @Bean
     public org.springframework.security.web.SecurityFilterChain applicationSecurity(HttpSecurity http,
-                                                                                   EntitiesAuthenticationProvider provider) throws Exception {
-        http.cors(org.springframework.security.config.Customizer.withDefaults())
+                                                                                   EntitiesAuthenticationProvider provider, RequestAdmissionFilter admission) throws Exception {
+        http.addFilterBefore(admission, org.springframework.security.web.csrf.CsrfFilter.class).cors(org.springframework.security.config.Customizer.withDefaults())
             .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                 .csrfTokenRequestHandler(new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler())
                 .ignoringRequestMatchers(WebSecurityConfig::isExplicitStatelessBasic))
@@ -67,7 +67,7 @@ public class WebSecurityConfig {
     private static boolean isExplicitStatelessBasic(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
         return request.getHeader("Origin") == null && request.getHeader("Cookie") == null
-            && request.getSession(false) == null && authorization != null && authorization.startsWith("Basic ");
+            && request.getSession(false) == null && authorization != null && authorization.regionMatches(true, 0, "Basic ", 0, 6);
     }
 
     /**

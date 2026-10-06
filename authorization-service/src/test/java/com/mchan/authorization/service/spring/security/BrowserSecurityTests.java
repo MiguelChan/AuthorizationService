@@ -33,7 +33,7 @@ import org.springframework.test.web.servlet.MockMvc;
  */
 @WebMvcTest(controllers = {SpringProfileController.class, CsrfController.class},
     properties = "app.security.allowed-origins=https://trusted.example")
-@Import({WebSecurityConfig.class, EntitiesAuthenticationProvider.class, AuthenticationFacade.class})
+@Import({WebSecurityConfig.class, EntitiesAuthenticationProvider.class, LoginAttemptGuard.class, AuthenticationFacade.class})
 public class BrowserSecurityTests {
     @Autowired
     private MockMvc mvc;
@@ -54,7 +54,7 @@ public class BrowserSecurityTests {
             .andExpect(status().isForbidden());
         verifyNoInteractions(edits, logins);
         when(edits.editProfile(eq("owner"), any())).thenReturn(true);
-        mvc.perform(put("/api/profile").with(authentication(token)).with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{}"))
+        mvc.perform(put("/api/profile").with(authentication(token)).with(csrf().asHeader()).contentType(MediaType.APPLICATION_JSON).content("{}"))
             .andExpect(status().isOk());
     }
 

@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class EntitiesAuthenticationProvider implements AuthenticationProvider {
 
     private final LogInComponent logInComponent;
+    private final LoginAttemptGuard attempts;
 
     /**
      * .
@@ -29,8 +30,9 @@ public class EntitiesAuthenticationProvider implements AuthenticationProvider {
      * @param logInComponent .
      */
     @Autowired
-    public EntitiesAuthenticationProvider(LogInComponent logInComponent) {
+    public EntitiesAuthenticationProvider(LogInComponent logInComponent, LoginAttemptGuard attempts) {
         this.logInComponent = logInComponent;
+        this.attempts = attempts;
         log.info("Initializing the Component");
     }
 
@@ -45,9 +47,10 @@ public class EntitiesAuthenticationProvider implements AuthenticationProvider {
      */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String username = authentication.getPrincipal().toString();
-        String password = authentication.getCredentials().toString();
+        String username = java.util.Objects.toString(authentication.getPrincipal(), null);
+        String password = java.util.Objects.toString(authentication.getCredentials(), null);
 
+        attempts.enter(username, password);
         Profile foundProfile;
 
         LogInRequest logInRequest = LogInRequest.builder()
@@ -57,9 +60,15 @@ public class EntitiesAuthenticationProvider implements AuthenticationProvider {
             .build();
         try {
             foundProfile = logInComponent.logIn(logInRequest);
+            attempts.succeeded(username);
+        } catch (com.mchan.authorization.service.exceptions.NotAuthorizedException e) {
+            attempts.failed(username);
+            throw new org.springframework.security.authentication.BadCredentialsException("Invalid username or password");
         } catch (Exception e) {
             log.error("There was an error while trying to Authenticate.", e);
-            throw new AuthenticationServiceException(e.getMessage(), e);
+            throw new AuthenticationServiceException("Authentication temporarily unavailable", e);
+        } finally {
+            attempts.release();
         }
 
         return EntitiesAuthenticationToken.builder()

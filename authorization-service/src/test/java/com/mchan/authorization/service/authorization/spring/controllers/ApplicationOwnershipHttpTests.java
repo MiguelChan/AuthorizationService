@@ -61,7 +61,7 @@ public class ApplicationOwnershipHttpTests {
     public void create_should_useTheAuthenticatedOwnerWhenProfileIdIsOmitted() throws Exception {
         when(clientCredentials.issue(org.mockito.ArgumentMatchers.anyInt())).thenReturn(new ClientCredentials("client", "secret", 1));
         when(createApplicationComponent.createApplication(any())).thenReturn(7);
-        mvc.perform(post("/api/applications").with(csrf()).with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/applications").with(csrf().asHeader()).with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
             .content("{\"application\":{\"appName\":\"example\"}}"))
             .andExpect(status().isOk());
         ArgumentCaptor<CreateApplicationRequest> captor = ArgumentCaptor.forClass(CreateApplicationRequest.class);
@@ -71,7 +71,7 @@ public class ApplicationOwnershipHttpTests {
 
     @Test
     public void create_should_rejectAnotherProfilesIdBeforeWriting() throws Exception {
-        mvc.perform(post("/api/applications").with(csrf()).with(profile("other")).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/applications").with(csrf().asHeader()).with(profile("other")).contentType(MediaType.APPLICATION_JSON)
             .content("{\"profileId\":\"owner\",\"application\":{}}"))
             .andExpect(status().isForbidden());
         verifyNoInteractions(createApplicationComponent);
@@ -81,10 +81,10 @@ public class ApplicationOwnershipHttpTests {
     public void owner_should_updateAndDeactivateTheirApplication() throws Exception {
         when(applicationDao.getApplication(7)).thenReturn(ApplicationEntity.builder().profileId("owner").build());
         when(updateApplicationComponent.updateApplication(any())).thenReturn(true);
-        mvc.perform(put("/api/applications/7").with(csrf()).with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(put("/api/applications/7").with(csrf().asHeader()).with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
             .content("{\"application\":{\"appName\":\"changed\"}}"))
             .andExpect(status().isOk());
-        mvc.perform(delete("/api/applications/7").with(csrf()).with(profile("owner"))).andExpect(status().isOk());
+        mvc.perform(delete("/api/applications/7").with(csrf().asHeader()).with(profile("owner"))).andExpect(status().isOk());
         verify(updateApplicationComponent).updateApplication(any());
         verify(deleteApplicationComponent).deleteApplication(7);
     }
@@ -92,19 +92,19 @@ public class ApplicationOwnershipHttpTests {
     @Test
     public void otherProfile_should_notUpdateOrDeactivateAnOwnersApplication() throws Exception {
         when(applicationDao.getApplication(7)).thenReturn(ApplicationEntity.builder().profileId("owner").build());
-        mvc.perform(put("/api/applications/7").with(csrf()).with(profile("other")).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(put("/api/applications/7").with(csrf().asHeader()).with(profile("other")).contentType(MediaType.APPLICATION_JSON)
             .content("{\"application\":{\"appName\":\"attack\"}}"))
             .andExpect(status().isForbidden());
-        mvc.perform(delete("/api/applications/7").with(csrf()).with(profile("other"))).andExpect(status().isForbidden());
+        mvc.perform(delete("/api/applications/7").with(csrf().asHeader()).with(profile("other"))).andExpect(status().isForbidden());
         verifyNoInteractions(updateApplicationComponent, deleteApplicationComponent);
     }
 
     @Test
     public void missingApplication_should_returnNotFoundWithoutWriting() throws Exception {
-        mvc.perform(put("/api/applications/7").with(csrf()).with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(put("/api/applications/7").with(csrf().asHeader()).with(profile("owner")).contentType(MediaType.APPLICATION_JSON)
             .content("{\"application\":{}}"))
             .andExpect(status().isNotFound());
-        mvc.perform(delete("/api/applications/7").with(csrf()).with(profile("owner"))).andExpect(status().isNotFound());
+        mvc.perform(delete("/api/applications/7").with(csrf().asHeader()).with(profile("owner"))).andExpect(status().isNotFound());
         verifyNoInteractions(updateApplicationComponent, deleteApplicationComponent);
     }
 

@@ -36,7 +36,7 @@ public class EntitiesAuthenticationProviderTests {
      */
     @BeforeEach
     public void setup() {
-        authenticationProvider = new EntitiesAuthenticationProvider(logInComponent);
+        authenticationProvider = new EntitiesAuthenticationProvider(logInComponent, new LoginAttemptGuard());
     }
 
     @Test

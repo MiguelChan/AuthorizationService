@@ -262,3 +262,6 @@ functional-tests/src/generated/**/*
 # Python receiving-service example
 __pycache__/
 *.py[cod]
+
+# Local validation secrets, certificates and measurements
+.validation/

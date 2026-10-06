@@ -34,8 +34,9 @@ public interface ApplicationEndpointsMapper {
      */
     @Select("SELECT endpoint_id AS \"endpointId\", application_id AS \"applicationId\", http_method AS \"httpMethod\", path, "
         + "action, description, is_active AS active FROM auth_db.application_endpoints WHERE application_id=#{appId} "
-        + "ORDER BY endpoint_id")
-    List<ApplicationEndpoint> list(int appId);
+        + "AND endpoint_id>#{afterId} ORDER BY endpoint_id LIMIT #{limit}")
+    List<ApplicationEndpoint> list(@org.apache.ibatis.annotations.Param("appId") int appId, @org.apache.ibatis.annotations.Param("limit") int limit,
+                                    @org.apache.ibatis.annotations.Param("afterId") int afterId);
 
     /**
      * Executes the catalog persistence operation.
@@ -58,4 +59,10 @@ public interface ApplicationEndpointsMapper {
     @Update("UPDATE auth_db.application_endpoints SET is_active=false WHERE application_id=#{appId} AND "
         + "endpoint_id=#{endpointId} AND is_active=true")
     int deactivate(@Param("appId") int appId, @Param("endpointId") int endpointId);
+
+    /**
+     * Enforces the per-application endpoint quota while its application row is locked.
+     */
+    @Select("SELECT count(*) FROM auth_db.application_endpoints WHERE application_id=#{id}")
+    int count(int id);
 }

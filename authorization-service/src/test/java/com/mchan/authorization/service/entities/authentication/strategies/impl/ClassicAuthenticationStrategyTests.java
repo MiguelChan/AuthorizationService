@@ -12,7 +12,6 @@ import com.mchan.authorization.service.entities.components.GetProfileComponent;
 import com.mchan.authorization.service.entities.dao.AccountDao;
 import com.mchan.authorization.service.entities.dao.SessionsDao;
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
-import com.mchan.authorization.service.entities.dao.entities.SessionEntity;
 import com.mchan.authorization.service.entities.utils.DateProvider;
 import com.mchan.authorization.service.entities.utils.SecurePasswordUtils;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
@@ -53,9 +52,7 @@ public class ClassicAuthenticationStrategyTests {
     public void setup() {
         strategy = new ClassicAuthenticationStrategy(
             accountDao,
-            sessionsDao,
             getProfileComponent,
-            dateProvider,
             securePasswordUtils);
     }
 
@@ -65,20 +62,13 @@ public class ClassicAuthenticationStrategyTests {
         ClassicAccountEntity expectedAccountEntity = EnhancedRandom.random(ClassicAccountEntity.class);
         Profile expectedProfile = EnhancedRandom.random(Profile.class);
 
-        when(dateProvider.now()).thenReturn(TEST_INSTANT);
         when(accountDao.getAccountByEmail(request.getUsername())).thenReturn(expectedAccountEntity);
         when(securePasswordUtils.isValidPassword(request.getPassword(), expectedAccountEntity.getPassword())).thenReturn(true);
         when(getProfileComponent.getProfile(expectedAccountEntity.getProfileId())).thenReturn(expectedProfile);
 
         Profile foundProfile = strategy.authenticateUser(request);
 
-        SessionEntity expectedSession = SessionEntity.builder()
-            .accountId(expectedAccountEntity.getAccountId())
-            .sessionType(expectedAccountEntity.getAccountType())
-            .sessionTime(TEST_INSTANT)
-            .build();
-
-        verify(sessionsDao).createSession(expectedSession);
+        org.mockito.Mockito.verifyNoInteractions(sessionsDao);
         assertThat(foundProfile).isEqualTo(expectedProfile);
     }
 

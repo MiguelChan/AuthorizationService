@@ -43,9 +43,11 @@ public class SpringApplicationGrantsController {
      * Lists incoming target-owned grants.
      */
     @GetMapping
-    public List<ApplicationGrant> list(@PathVariable int targetId) {
+    public List<ApplicationGrant> list(@PathVariable int targetId,
+        @org.springframework.web.bind.annotation.RequestParam(defaultValue = "100") int limit,
+        @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int afterId) {
         access.requireOwner(targetId);
-        return grants.list(targetId);
+        return grants.list(targetId, limit, afterId);
     }
 
     /**

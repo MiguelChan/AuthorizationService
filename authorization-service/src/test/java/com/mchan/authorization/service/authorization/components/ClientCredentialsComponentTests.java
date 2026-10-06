@@ -20,7 +20,7 @@ import org.mockito.Mockito;
 public class ClientCredentialsComponentTests {
     private final ClientCredentialsMapper mapper = mock(ClientCredentialsMapper.class);
     private final SecurePasswordUtils passwords = new SecurePasswordUtils("test-pepper", 4);
-    private final ClientCredentialsComponent component = new ClientCredentialsComponent(mapper, passwords);
+    private final ClientCredentialsComponent component = new ClientCredentialsComponent(mapper, passwords, new ClientSecretHasher("test-pepper"));
 
     @Test
     public void issue_should_deliverRandomSecretAndPersistOnlyHash() throws Exception {
@@ -33,7 +33,7 @@ public class ClientCredentialsComponentTests {
         Mockito.verify(mapper, Mockito.times(2)).save(captor.capture());
         ClientCredentialEntity stored = captor.getAllValues().get(0);
         assertThat(stored.getSecretHash()).isNotEqualTo(first.getClientSecret());
-        assertThat(passwords.isValidPassword(first.getClientSecret(), stored.getSecretHash())).isTrue();
+        assertThat(new ClientSecretHasher("test-pepper").matches(first.getClientSecret(), stored.getSecretHash())).isTrue();
         assertThat(stored.toString()).doesNotContain(stored.getSecretHash());
         when(mapper.findActive(first.getClientId())).thenReturn(stored);
         assertThat(component.authenticate(first.getClientId(), first.getClientSecret())).isSameAs(stored);
@@ -64,5 +64,59 @@ public class ClientCredentialsComponentTests {
         assertThat(component.authenticate(null, null)).isNull();
         assertThat(component.authenticate("client", "short")).isNull();
         verifyNoInteractions(mapper);
+    }
+
+    @Test
+    public void legacyHash_should_upgradeWithoutRotatingIdentityOrVersion() throws Exception {
+        String secret = "a".repeat(43);
+        ClientCredentialEntity stored = legacy(secret);
+        String original = stored.getSecretHash();
+        String upgraded = new ClientSecretHasher("test-pepper").hash(secret);
+        when(mapper.findActive("legacy")).thenReturn(stored);
+        when(mapper.upgradeHash(7, 4, original, upgraded)).thenReturn(1);
+        assertThat(component.authenticate("legacy", secret)).isSameAs(stored);
+        assertThat(stored.getVersion()).isEqualTo(4);
+        assertThat(stored.getSecretHash()).isEqualTo(upgraded);
+        Mockito.verify(mapper).upgradeHash(7, 4, original, upgraded);
+        Mockito.verify(mapper, Mockito.never()).save(Mockito.any());
+    }
+
+    @Test
+    public void legacyUpgrade_should_notOverwriteConcurrentRotationOrRevocation() throws Exception {
+        String secret = "a".repeat(43);
+        ClientCredentialEntity stored = legacy(secret);
+        ClientCredentialEntity rotated = legacy("b".repeat(43));
+        rotated.setVersion(5);
+        when(mapper.findActive("legacy")).thenReturn(stored, rotated);
+        assertThat(component.authenticate("legacy", secret)).isNull();
+        when(mapper.findActive("legacy")).thenReturn(stored).thenReturn(null);
+        assertThat(component.authenticate("legacy", secret)).isNull();
+        Mockito.verify(mapper, Mockito.never()).save(Mockito.any());
+    }
+
+    @Test
+    public void legacyUpgrade_should_acceptAnotherSuccessfulHashOnlyUpgrade() throws Exception {
+        String secret = "a".repeat(43);
+        ClientCredentialEntity stored = legacy(secret);
+        ClientCredentialEntity upgraded = legacy(secret);
+        upgraded.setSecretHash(new ClientSecretHasher("test-pepper").hash(secret));
+        when(mapper.findActive("legacy")).thenReturn(stored, upgraded);
+        assertThat(component.authenticate("legacy", secret)).isSameAs(upgraded);
+    }
+
+    @Test
+    public void incorrectLegacySecret_should_notTriggerHashUpgrade() throws Exception {
+        when(mapper.findActive("legacy")).thenReturn(legacy("a".repeat(43)));
+        assertThat(component.authenticate("legacy", "b".repeat(43))).isNull();
+        Mockito.verify(mapper, Mockito.never()).upgradeHash(Mockito.anyInt(), Mockito.anyLong(), Mockito.anyString(), Mockito.anyString());
+    }
+
+    private ClientCredentialEntity legacy(String secret) throws Exception {
+        ClientCredentialEntity stored = new ClientCredentialEntity();
+        stored.setApplicationId(7);
+        stored.setClientId("legacy");
+        stored.setVersion(4);
+        stored.setSecretHash(passwords.createSecurePassword(secret));
+        return stored;
     }
 }

@@ -47,4 +47,12 @@ public interface ClientCredentialsMapper {
     @Update("UPDATE auth_db.client_credentials SET revoked_at=CURRENT_TIMESTAMP,version=version+1 WHERE "
         + "application_id=#{id} AND revoked_at IS NULL")
     int revoke(int id);
+
+    /**
+     * Upgrades a verified legacy hash only while its exact version and hash remain current.
+     */
+    @Update("UPDATE auth_db.client_credentials SET secret_hash=#{newHash} WHERE application_id=#{id} AND "
+        + "version=#{version} AND secret_hash=#{oldHash} AND revoked_at IS NULL")
+    int upgradeHash(@org.apache.ibatis.annotations.Param("id") int id, @org.apache.ibatis.annotations.Param("version") long version,
+                    @org.apache.ibatis.annotations.Param("oldHash") String oldHash, @org.apache.ibatis.annotations.Param("newHash") String newHash);
 }
