@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import React from 'react';
 import {
   render,
@@ -7,7 +8,7 @@ import { SignUpForm } from './SignUpForm';
 
 describe('SignUpForm', () => {
 
-  const mockOnSignUpRequestListener = jest.fn();
+  const mockOnSignUpRequestListener = vi.fn();
 
   afterEach(() => {
     mockOnSignUpRequestListener.mockClear;

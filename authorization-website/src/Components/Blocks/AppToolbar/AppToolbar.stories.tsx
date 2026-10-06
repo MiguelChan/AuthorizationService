@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Story,
+  StoryFn,
   Meta,
-} from '@storybook/react';
+} from '@storybook/react-vite';
 import {
   AppToolbar,
 } from './AppToolbar';
@@ -12,14 +12,14 @@ export default {
   title: 'Components/Blocks/AppToolbar',
   component: AppToolbar,
   decorators: [
-    (Story) => (
+    (StoryFn) => (
       <AppBar position='static'>
-        <Story />
+        <StoryFn />
       </AppBar>
     ),
   ],
 } as Meta;
 
-const Template: Story = () => <AppToolbar />;
+const Template: StoryFn = () => <AppToolbar />;
 
 export const Primary = Template.bind({});

@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Story,
+  StoryFn,
   Meta,
-} from '@storybook/react';
+} from '@storybook/react-vite';
 import { 
   LandingPage,
 } from './LandingPage';
@@ -12,6 +12,6 @@ export default {
   component: LandingPage,
 } as Meta;
 
-const Template: Story = () => <LandingPage />;
+const Template: StoryFn = () => <LandingPage />;
 
 export const Primary = Template.bind({});
