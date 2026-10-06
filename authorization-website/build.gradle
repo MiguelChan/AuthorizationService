@@ -28,6 +28,8 @@ npmInstall { args = ['--no-audit', '--no-fund'] }
 
 npm_run_build {
     inputs.file 'index.html'
+    inputs.file 'playwright.config.ts'
+    inputs.files fileTree('browser-tests')
     inputs.files fileTree('.storybook')
     environment = ['NODE_OPTIONS': '--max-old-space-size=768', 'RAYON_NUM_THREADS': '2']
     inputs.files fileTree("public")

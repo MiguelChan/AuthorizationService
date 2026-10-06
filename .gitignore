@@ -269,3 +269,5 @@ __pycache__/
 # Generated frontend dependency evidence and component documentation.
 **/build-reports/
 **/storybook-static/
+/authorization-website/test-results/
+/authorization-website/playwright-report/

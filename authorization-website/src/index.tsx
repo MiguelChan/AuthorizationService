@@ -7,10 +7,7 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { 
-  initialState as  initialProfileContext, 
-  ProfileContext,
-} from './Components/Context';
+import { ProfileProvider } from './Components/Context';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -20,8 +17,8 @@ if (!rootElement) {
 createRoot(rootElement).render(
   <React.StrictMode>
     <CssBaseline />
-    <ProfileContext.Provider value={initialProfileContext}>
+    <ProfileProvider>
       <Application />
-    </ProfileContext.Provider>
+    </ProfileProvider>
   </React.StrictMode>
 );

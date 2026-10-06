@@ -21,14 +21,15 @@
   "scripts": {
     "start": "vite",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src .storybook vite.config.ts --max-warnings=0",
+    "lint": "eslint src .storybook browser-tests vite.config.ts playwright.config.ts --max-warnings=0",
     "build": "npm run typecheck && npm run lint && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "storybook": "storybook dev --host localhost --port 6006 --ci",
     "build-storybook": "storybook build",
-    "audit": "npm audit --audit-level=low"
+    "audit": "npm audit --audit-level=low",
+    "test:browser": "playwright test"
   },
   "devDependencies": {
     "@storybook/addon-docs": "10.6.1",
@@ -51,7 +52,8 @@
     "@eslint/js": "10.0.1",
     "typescript-eslint": "8.71.1",
     "eslint-plugin-react-hooks": "7.1.1",
-    "globals": "17.13.0"
+    "globals": "17.13.0",
+    "@playwright/test": "1.63.0"
   },
   "overrides": {
     "lodash": "4.18.1"

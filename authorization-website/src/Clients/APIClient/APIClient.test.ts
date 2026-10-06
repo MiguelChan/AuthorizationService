@@ -16,6 +16,14 @@ describe('APIClient', () => {
     mockPostFn.mockClear();
   });
 
+  it('loads only the relative server profile with a bounded, abortable request', async () => {
+    const profileDto: ProfileDto = { profile: { profileId: 'server', firstName: 'First', lastName: 'Last', phoneNumber: '1234567890' } };
+    (axios.get as Mock).mockResolvedValueOnce({ data: profileDto });
+    const signal = new AbortController().signal;
+    await expect(apiClient.getProfile(signal)).resolves.toEqual(profileDto);
+    expect(axios.get).toHaveBeenCalledWith('/api/profile', { signal, timeout: 5000 });
+  });
+
   describe('logIn', () => {
 
     const buildMockXmlHttpRequest = (responseUrl: string): XMLHttpRequest => {

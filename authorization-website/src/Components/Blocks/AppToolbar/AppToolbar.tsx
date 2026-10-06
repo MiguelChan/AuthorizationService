@@ -8,6 +8,9 @@ export const AppToolbar: React.FunctionComponent = () => {
   const profileContext: ProfileState = React.useContext(ProfileContext);
 
   const renderAddons = (): React.ReactElement => {
+    if (profileContext.isCheckingSession) {
+      return <Typography>Checking your session...</Typography>;
+    }
     const profile = profileContext.getProfile();
     
     if (profile === undefined) {

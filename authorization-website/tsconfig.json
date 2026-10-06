@@ -28,6 +28,8 @@
   "include": [
     "src",
     ".storybook",
-    "vite.config.ts"
+    "vite.config.ts",
+    "browser-tests",
+    "playwright.config.ts"
   ]
 }
