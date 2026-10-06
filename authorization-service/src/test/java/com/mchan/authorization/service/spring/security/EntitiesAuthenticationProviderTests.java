@@ -65,7 +65,7 @@ public class EntitiesAuthenticationProviderTests {
         EntitiesAuthenticationToken authToken = (EntitiesAuthenticationToken) authenticatedUser;
         assertThat(authToken.getProfile()).isEqualTo(expectedProfile);
         assertThat(authToken.getPrincipal()).isEqualTo(username);
-        assertThat(authToken.getCredentials()).isEqualTo(password);
+        assertThat(authToken.getCredentials()).isNull();
     }
 
     @Test

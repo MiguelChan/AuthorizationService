@@ -34,6 +34,16 @@ public class SignUpRequestValidator {
      *
      */
     public void validateSignUpRequest(SignUpRequest request) {
+        if (request == null) {
+            throw new SignUpException("Registration is required");
+        }
+        bounded(request.getFirstName(), 128, "First name");
+        bounded(request.getLastName(), 128, "Last name");
+        bounded(request.getEmailAddress(), 254, "Email address");
+        bounded(request.getPassword(), 128, "Password");
+        if (request.getPhoneNumber() == null || !request.getPhoneNumber().matches("[0-9]{10}")) {
+            throw new SignUpException("Phone number must contain 10 digits");
+        }
         requireNonNullField(request.getFirstName(), "First name is required");
         requireNonNullField(request.getLastName(), "Last name is required");
         requireNonNullField(request.getEmailAddress(), "Email address is required");
@@ -44,6 +54,12 @@ public class SignUpRequestValidator {
 
         // Now let's validate that the password is a safe and secure one.
         validatePassword(request.getPassword());
+    }
+
+    private void bounded(String value, int maximum, String field) {
+        if (value == null || value.isBlank() || value.length() > maximum) {
+            throw new SignUpException(field + " is required and must be at most " + maximum + " characters");
+        }
     }
 
     private void validatePassword(String password) {

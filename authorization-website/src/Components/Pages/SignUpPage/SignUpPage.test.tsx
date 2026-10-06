@@ -14,6 +14,7 @@ function setup() {
   return view;
 }
 describe('Public registration', () => {
+  beforeEach(() => (axios.get as jest.Mock).mockResolvedValue({data: {token: 'csrf-token', headerName: 'X-XSRF-TOKEN'}}));
   it('submits once, masks passwords and links to login after success', async () => {
     let resolve: (value: any) => void = () => {};
     post.mockReturnValueOnce(new Promise(done => { resolve = done; }));
@@ -24,7 +25,7 @@ describe('Public registration', () => {
     fireEvent.click(view.getByText('Create Account'));
     await wait(() => expect(post).toHaveBeenCalledTimes(1));
     expect(post).toHaveBeenCalledWith('/api/sign-up', { firstName: 'Test', lastName: 'User', phoneNumber: '1234567890',
-      emailAddress: 'new@example.com', password: 'TestPass123!' });
+      emailAddress: 'new@example.com', password: 'TestPass123!' }, {headers: {'X-XSRF-TOKEN': 'csrf-token'}});
     expect(view.getByText('Creating account...').closest('button')).toBeDisabled();
     resolve({ data: { profileId: 'profile' } });
     await wait(() => expect(view.getByText('Account created. You can now log in.')).toBeInTheDocument());

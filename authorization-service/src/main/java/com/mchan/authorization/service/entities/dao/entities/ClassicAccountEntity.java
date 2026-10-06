@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class ClassicAccountEntity extends BaseAccountEntity {
 
     private String email;
+    @lombok.ToString.Exclude
     private String password;
 
     /**

@@ -11,7 +11,8 @@ class APIClient {
     this.signUp = this.signUp.bind(this);
   }
 
-  public logIn(username: string, password: string): Promise<ProfileDto> {
+  public async logIn(username: string, password: string): Promise<ProfileDto> {
+    const csrfHeaders = await this.csrfHeaders();
     return new Promise<ProfileDto>((accept, reject) => {
       const params = new URLSearchParams();
       params.append('username', username);
@@ -20,6 +21,7 @@ class APIClient {
       const config: AxiosRequestConfig = {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          ...csrfHeaders,
         },
       };
 
@@ -38,12 +40,13 @@ class APIClient {
     });
   }
 
-  public signUp(signUpRequest: SignUpRequest): Promise<SignUpResponse> {
+  public async signUp(signUpRequest: SignUpRequest): Promise<SignUpResponse> {
+    const csrfHeaders = await this.csrfHeaders();
     const url = '/sign-up';
     return new Promise<SignUpResponse>((accept, reject) => {
       const fullUrl = `${this.API_URL}${url}`;
 
-      axios.post(fullUrl, signUpRequest)
+      axios.post(fullUrl, signUpRequest, { headers: csrfHeaders })
       .then((response: AxiosResponse<SignUpResponse>) => {
         accept(response.data);
       })
@@ -51,6 +54,10 @@ class APIClient {
         reject(error);
       });
     });
+  }
+  private async csrfHeaders(): Promise<Record<string, string>> {
+    const response = await axios.get<{token: string; headerName: string}>('/api/csrf');
+    return { [response.data.headerName]: response.data.token };
   }
 }
 
