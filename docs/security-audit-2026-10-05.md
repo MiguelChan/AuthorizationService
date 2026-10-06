@@ -13,7 +13,7 @@ The [phase-0 design](../design-docs/phase0/DesignDocument.md) describes a multi-
 | Application consumer identities | Existing entities are global administrator identities | Explicit application membership model; cross-tenant tests |
 | Consumer-user roles | Authentication tokens have no granted authorities; owner checks are the policy | Application-scoped read/create/update/delete/admin policy and owner-controlled assignment; never accept caller-assigned roles |
 | User token/refresh flow | No consumer-user token or refresh implementation | Separate approved OAuth/OIDC flow; do not add a password grant or reuse confidential service tokens as user identities |
-| Auditability | Interactive browser logins produce one row; Basic reads no longer write history | Add complete authorization/security-event records and approve a bounded retention policy |
+| Auditability | Interactive browser logins produce one row; Basic reads no longer write history | Add complete authorization/security-event records; the bounded 30-day login retention is approved |
 
 The original JWT suggestion differs from the explicitly documented opaque service-token decision in [the current contract](oauth-client-credentials.md). Current online authorization supports immediate credential/grant revocation. This audit does not reintroduce self-contained permission caching or imply complete OAuth/OIDC support.
 
@@ -59,7 +59,7 @@ Introspection uses a single SQL snapshot for token/issuer/audience/expiry and li
 source/recipient credential, application, endpoint and grant state, after separate
 client-secret authentication. No permission result is cached across revocation.
 [Capacity evidence](capacity.md) distinguishes sustained traffic, bursts and issued
-tokens. [The retention proposal](retention-proposal.md) is awaiting approval.
+tokens. [The bounded retention policy](retention-proposal.md) was approved on 2026-10-06 and is implemented in a separate layer.
 
 ## Frontend dependency audit and missing product capabilities
 
@@ -82,7 +82,7 @@ Prioritized remaining work:
 3. Implement the separately designed consumer-user OAuth/OIDC and lifecycle flows
    (email verification, recovery/MFA, deactivation and session revocation), with
    cross-tenant and role-escalation tests.
-4. Approve storage retention; add deployment monitoring, distributed/gateway rate
+4. Monitor the approved bounded retention; add deployment monitoring, distributed/gateway rate
    policies and receiving-service production validation before a capacity promise.
 
 The local security audit is bounded to owned disposable fixtures. Production

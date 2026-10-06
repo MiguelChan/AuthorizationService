@@ -49,6 +49,7 @@ dependencies {
 test {
     systemProperty 'spring.profiles.active', 'dev'
     useJUnitPlatform()
+    exclude "**/RetentionDatabaseTests.class"
     finalizedBy jacocoTestReport
 }
 
@@ -125,5 +126,22 @@ jacocoTestReport {
                     '**/WebSecurityConfig*'
             ])
         }))
+    }
+}
+
+// Real PostgreSQL tests run only against an owned, disposable database.
+tasks.register('retentionTest', Test) {
+    dependsOn testClasses
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+    include '**/RetentionDatabaseTests.class'
+    outputs.upToDateWhen { false }
+    maxParallelForks = 1
+    testLogging.showStandardStreams = true
+    doFirst {
+        if (!System.getenv('RETENTION_TEST_URL')?.startsWith('jdbc:postgresql://127.0.0.1:')) {
+            throw new GradleException('Run tools/validation/retention.py to create a disposable database')
+        }
     }
 }
