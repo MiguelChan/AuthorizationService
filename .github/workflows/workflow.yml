@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - mainline
+      - u/miguel.chan/**
   workflow_dispatch:
 
 jobs:
@@ -18,12 +19,11 @@ jobs:
         working-directory: .
     steps:
       - name: Checkout the Source Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
       - name: Setup Java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v5
         with:
-          java-version: '16.x'
-          java-package: jdk
-          architecture: x64
+          distribution: 'temurin'
+          java-version: '25'
       - name: Run release script
-        run: ./gradlew release -Pskip-functional-tests
+        run: ./gradlew release -Pskip-functional-tests --no-daemon --max-workers=1

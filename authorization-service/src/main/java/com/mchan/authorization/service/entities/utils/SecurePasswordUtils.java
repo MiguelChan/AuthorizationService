@@ -1,9 +1,9 @@
 package com.mchan.authorization.service.entities.utils;
 
+import java.util.Base64;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -70,7 +70,7 @@ public class SecurePasswordUtils {
 
         byte[] hashedPassword = originalPassword.getBytes();
 
-        return new String(Base64.encodeBase64(mac.doFinal(hashedPassword))).trim();
+        return Base64.getEncoder().encodeToString(mac.doFinal(hashedPassword));
     }
 
 }

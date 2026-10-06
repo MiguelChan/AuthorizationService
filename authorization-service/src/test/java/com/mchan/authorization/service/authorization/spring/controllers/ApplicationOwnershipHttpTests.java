@@ -28,10 +28,10 @@ import com.mchan.authorization.service.spring.security.WebSecurityConfig;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
@@ -41,18 +41,20 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 @WebMvcTest(controllers = SpringApplicationsController.class)
 @Import({WebSecurityConfig.class, AuthenticationFacade.class, ApplicationOwnershipComponent.class})
 public class ApplicationOwnershipHttpTests {
+    @MockitoBean
+    private com.mchan.authorization.service.spring.security.EntitiesAuthenticationProvider authenticationProvider;
 
     @Autowired
     private MockMvc mvc;
-    @MockBean
+    @MockitoBean
     private ClientCredentialsComponent clientCredentials;
-    @MockBean
+    @MockitoBean
     private CreateApplicationComponent createApplicationComponent;
-    @MockBean
+    @MockitoBean
     private DeleteApplicationComponent deleteApplicationComponent;
-    @MockBean
+    @MockitoBean
     private UpdateApplicationComponent updateApplicationComponent;
-    @MockBean
+    @MockitoBean
     private ApplicationDao applicationDao;
 
     @Test

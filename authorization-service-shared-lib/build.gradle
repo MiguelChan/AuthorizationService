@@ -6,7 +6,7 @@ plugins {
 
 group 'com.mchan'
 version '1.0.0-SNAPSHOT'
-sourceCompatibility = '11'
+java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
 
 configurations {
     compileOnly {
@@ -19,15 +19,19 @@ repositories {
 }
 
 dependencies {
-    api 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'
+    api platform('org.springframework.boot:spring-boot-dependencies:4.1.1')
+    annotationProcessor platform('org.springframework.boot:spring-boot-dependencies:4.1.1')
+    testAnnotationProcessor platform('org.springframework.boot:spring-boot-dependencies:4.1.1')
+    api 'com.fasterxml.jackson.core:jackson-annotations'
 
-    compileOnly 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok'
 
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 test {
@@ -36,6 +40,7 @@ test {
 }
 
 checkstyle {
+    toolVersion = '12.3.0'
     ignoreFailures = false
     maxWarnings = 0
 }
@@ -54,7 +59,7 @@ tasks.register('release') {
 }
 
 jacoco {
-    toolVersion = '0.8.7'
+    toolVersion = '0.8.14'
     reportsDirectory.set(file("$buildDir/jacoco"))
 }
 
