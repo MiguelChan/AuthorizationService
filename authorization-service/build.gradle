@@ -136,6 +136,7 @@ tasks.register('retentionTest', Test) {
     classpath = sourceSets.test.runtimeClasspath
     useJUnitPlatform()
     include '**/RetentionDatabaseTests.class'
+    outputs.upToDateWhen { false }
     maxParallelForks = 1
     testLogging.showStandardStreams = true
     doFirst {

@@ -68,7 +68,7 @@ cannot open another retention transaction. CI runs this harness after release.
 
 On 2026-10-06 the six PostgreSQL checks passed locally. The maximum transaction
 committed 2,000 tokens, 128,000 cascading permission rows and 1,000 old logins in
-100ms on the limited database; the next pass drained the remaining eligible rows.
+100–104ms across two passes on fresh limited databases; the next pass drained the remaining eligible rows.
 The timeout fixture rolled back after approximately 2.1 seconds and the next pass
 recovered. The serial release also passed 195 backend tests, required style,
 website packaging and the existing 23 website tests/six snapshots. Generated legacy

@@ -24,7 +24,13 @@ def command(args, **kwargs):
 
 def process_snapshot():
     rows = command(["ps", "-axo", "pid=,ppid=,args="], capture_output=True).stdout.splitlines()
-    return {int(p): (int(parent), args) for row in rows if len(parts := row.strip().split(None, 2)) == 3 for p, parent, args in [parts]}
+    snapshot = {}
+    for row in rows:
+        fields = row.strip().split(None, 2)
+        if len(fields) == 3:
+            pid, parent, process_args = fields
+            snapshot[int(pid)] = (int(parent), process_args)
+    return snapshot
 
 
 def track_children():
