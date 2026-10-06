@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Story,
+  StoryFn,
   Meta,
-} from '@storybook/react';
+} from '@storybook/react-vite';
 import { SignUpPage } from './SignUpPage';
 
 export default {
@@ -10,6 +10,6 @@ export default {
   component: SignUpPage,
 } as Meta;
 
-const Template: Story = () => <SignUpPage />;
+const Template: StoryFn = () => <SignUpPage />;
 
 export const Primary = Template.bind({});

@@ -1,9 +1,11 @@
+import { vi } from 'vitest';
 import React from 'react';
 import {
   renderHook,
   RenderHookResult,
   act,
-} from '@testing-library/react-hooks';
+  waitFor,
+} from '@testing-library/react';
 import { 
   LogInApiMethod,
   useLogIn,
@@ -15,7 +17,7 @@ import {
 
 describe('UseLogin', () => {
 
-  const mockApiFn = jest.fn();
+  const mockApiFn = vi.fn();
 
   const mockProps: HookProps = {
     logInApiFn: mockApiFn,
@@ -45,10 +47,6 @@ describe('UseLogin', () => {
 
     const hookResult = setupHook(mockProps);
 
-    const {
-      waitFor,
-      waitForNextUpdate,
-    } = hookResult;
 
     const useLogInState: UseLogInState = hookResult.result.current;
 
@@ -68,7 +66,7 @@ describe('UseLogin', () => {
     act(() => {
       useLogInState.onLogInRequested(expectedUsername, expectedPassword);
     });
-    await waitForNextUpdate();
+    await waitFor(() => expect(hookResult.result.current.isLoggingIn).toBe(false));
 
     expect(mockApiFn).toHaveBeenCalledWith(expectedUsername, expectedPassword);
     
@@ -82,8 +80,8 @@ describe('UseLogin', () => {
     expect(hasError).toBeFalsy();
   });
 
-  const setupHook = (props: HookProps): RenderHookResult<HookProps, UseLogInState> => {
-    return renderHook<HookProps, UseLogInState>((props: HookProps) => {
+  const setupHook = (props: HookProps): RenderHookResult<UseLogInState, HookProps> => {
+    return renderHook<UseLogInState, HookProps>((props: HookProps) => {
       return useLogIn(props.logInApiFn);
     }, {
       initialProps: props,

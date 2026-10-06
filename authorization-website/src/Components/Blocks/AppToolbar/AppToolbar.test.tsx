@@ -7,7 +7,7 @@ import { AppToolbar } from './AppToolbar';
 import { ProfileContext, ProfileState } from '../../Context';
 import { AppBar } from '@mui/material';
 import { Profile } from '../../../Models';
-import { MemoryRouter } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('AppToolbar', () => {
 

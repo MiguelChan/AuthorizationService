@@ -1,9 +1,11 @@
+import { vi } from 'vitest';
 import React from 'react';
 import {
   renderHook,
   RenderHookResult,
   act,
-} from '@testing-library/react-hooks';
+  waitFor,
+} from '@testing-library/react';
 import { SignUpApiFn, SignUpState, useSignUp } from './UseSignUp';
 import { SignUpRequest, SignUpResponse } from '../../../Models';
 
@@ -13,7 +15,7 @@ interface HookProps {
 
 describe('UseSignUp', () => {
 
-  const mockApiFn = jest.fn();
+  const mockApiFn = vi.fn();
 
   afterEach(() => {
     mockApiFn.mockClear();
@@ -57,7 +59,6 @@ describe('UseSignUp', () => {
 
     const {
       result,
-      waitForNextUpdate,
     } = setupHook({
       signUpApiFn: mockApiFn,
     });
@@ -68,12 +69,27 @@ describe('UseSignUp', () => {
     act(() => {
       onSignUpRequested(expectedFirstName, expectedLastname, expectedPhone, expectedMail, expectedPassword);
     });
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.isCreatingAccount).toBe(false));
     
     expect(mockApiFn).toHaveBeenCalledWith(expectedRequest);
     expect(result.current.isProfileCreated).toBeTruthy();
     expect(result.current.hasError).toBeFalsy();
     expect(result.current.isCreatingAccount).toBeFalsy();
+  });
+
+  it('completes one registration under the application StrictMode mount cycle', async () => {
+    mockApiFn.mockResolvedValueOnce({ profileId: 'created' });
+    const { result } = renderHook<SignUpState, HookProps>(props => useSignUp(props.signUpApiFn), {
+      initialProps: { signUpApiFn: mockApiFn },
+      wrapper: ({ children }) => React.createElement(React.StrictMode, null, children),
+    });
+    act(() => {
+      result.current.onSignUpRequested('First', 'Last', '1234567890', 'strict@example.com', 'TestPass123!');
+      result.current.onSignUpRequested('First', 'Last', '1234567890', 'strict@example.com', 'TestPass123!');
+    });
+    await waitFor(() => expect(result.current.isProfileCreated).toBe(true));
+    expect(result.current.isCreatingAccount).toBe(false);
+    expect(mockApiFn).toHaveBeenCalledTimes(1);
   });
 
   it('Should handle errors gracefully', async () => {
@@ -96,7 +112,6 @@ describe('UseSignUp', () => {
 
     const {
       result,
-      waitForNextUpdate,
     } = setupHook({
       signUpApiFn: mockApiFn,
     });
@@ -107,7 +122,7 @@ describe('UseSignUp', () => {
     act(() => {
       onSignUpRequested(expectedFirstName, expectedLastname, expectedPhone, expectedMail, expectedPassword);
     });
-    await waitForNextUpdate();
+    await waitFor(() => expect(result.current.isCreatingAccount).toBe(false));
     
     expect(mockApiFn).toHaveBeenCalledWith(expectedRequest);
     expect(result.current.isProfileCreated).toBeFalsy();
@@ -115,8 +130,8 @@ describe('UseSignUp', () => {
     expect(result.current.isCreatingAccount).toBeFalsy();
   });
 
-  const setupHook = (inputProps: HookProps): RenderHookResult<HookProps, SignUpState> => {
-    return renderHook<HookProps, SignUpState>((props) => {
+  const setupHook = (inputProps: HookProps): RenderHookResult<SignUpState, HookProps> => {
+    return renderHook<SignUpState, HookProps>((props) => {
       return useSignUp(props.signUpApiFn);
     }, {
       initialProps: {

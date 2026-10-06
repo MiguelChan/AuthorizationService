@@ -265,3 +265,7 @@ __pycache__/
 
 # Local validation secrets, certificates and measurements
 .validation/
+
+# Generated frontend dependency evidence and component documentation.
+**/build-reports/
+**/storybook-static/

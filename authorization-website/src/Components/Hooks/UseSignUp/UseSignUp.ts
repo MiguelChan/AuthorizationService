@@ -19,7 +19,10 @@ export function useSignUp(signUpApiFn: SignUpApiFn = apiClient.signUp): SignUpSt
   const [hasError, setError] = React.useState(false);
   const pending = React.useRef(false);
   const mounted = React.useRef(true);
-  React.useEffect(() => () => { mounted.current = false; }, []);
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
 
   const onSignUpRequested: OnSignUpRequestedListener = (firstName, lastName, phoneNumber, emailAddress, password) => {
     if (pending.current) return;

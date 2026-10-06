@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Story,
+  StoryFn,
   Meta,
-} from '@storybook/react';
+} from '@storybook/react-vite';
 import { SignUpForm, SignUpFormProps } from './SignUpForm';
 
 export default {
@@ -10,13 +10,13 @@ export default {
   component: SignUpForm,
   argTypes: {
     onSignUpRequestCreatedListener: {
-      defaultValue: 'onSignUpRequestCreatedListener',
       description: 'onSignUpRequestCreatedListener',
       name: 'onSignUpRequestCreatedListener',
     },
   },
 } as Meta;
 
-const Template: Story<SignUpFormProps> = (args) => <SignUpForm {...args} />;
+const Template: StoryFn<SignUpFormProps> = (args) => <SignUpForm {...args} />;
 
 export const Primary = Template.bind({});
+Primary.args = { onSignUpRequestCreatedListener: () => undefined };

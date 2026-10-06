@@ -50,3 +50,35 @@ Primary references:
 - [Router hydration advisory](https://github.com/advisories/GHSA-337j-9hxr-rhxg)
 - [Lodash array-path prototype pollution](https://github.com/advisories/GHSA-f23m-r3pf-42rh)
 - [CRA deprecation](https://react.dev/blog/2025/02/14/sunsetting-create-react-app)
+
+## Build and browser dependency correction layer
+
+Replace CRA with Vite 8.3.3, Vitest 5.0.3 and Storybook 10.6.1. Gradle pins Node
+24.21.0 LTS and npm 11.21.0; npm ci resolves strict peer dependencies without
+legacy-peer-deps, force fixes or audit exclusions. React 18.3.1 and patched Router
+7.18.4 retain the existing routes. TypeScript and hook lint checks run before the
+production build. The complete fresh npm audit reports zero findings across all
+severities, including development and build dependencies. Release now checks this
+full tree; CI also builds Storybook independently.
+
+The website remains packaged in Spring's jar. Vite assets use /static/assets so
+they retain the public Spring Security resource boundary. Development binds to
+loopback and GET /login loads the current SPA, while POST /login reaches Spring.
+An emitted-module inventory is written to build-reports/browser-packages.json
+outside public assets. The inspected production inventory contains Axios browser
+modules and no Node HTTP adapter, follow-redirects or form-data modules. Storybook
+builds do not overwrite this inventory or enter the deployed jar.
+
+React createRoot revealed a registration bug: StrictMode's setup/cleanup/setup
+cycle left the hook's mounted ref permanently false. A regression test reproduced
+the completed registration response being ignored. Effect setup now restores the
+ref; the test verifies completion and one API call for duplicate submissions.
+The suite has 24 tests and six reviewed Vitest snapshots. Snapshot changes retain
+the form labels/routes and account for the compatible MUI update and router link
+attributes. Serial release validates 195 backend tests, frontend checks and jar
+packaging; the unchanged local IPv6 test override described above still applies.
+
+The main app chunk is approximately 505 kB minified / 165 kB gzip. The build keeps
+its size warning visible; route splitting remains a separate performance change.
+Packaged-browser registration, login and session checks are recorded in the next
+layer rather than inferred from unit test or compilation results.

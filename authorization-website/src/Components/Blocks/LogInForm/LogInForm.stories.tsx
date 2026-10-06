@@ -1,8 +1,8 @@
 import React from 'react';
 import {
-  Story,
+  StoryFn,
   Meta,
-} from '@storybook/react';
+} from '@storybook/react-vite';
 import { LogInForm, LogInFormProps } from './LogInForm';
 
 export default {
@@ -10,13 +10,13 @@ export default {
   component: LogInForm,
   argTypes: {
     onLogIn: {
-      defaultValue: 'onLogIn',
       description: 'onLogIn',
       name: 'onLogIn',
     }
   }
 } as Meta;
 
-const Template: Story<LogInFormProps> = (args) => <LogInForm {...args} />;
+const Template: StoryFn<LogInFormProps> = (args) => <LogInForm {...args} />;
 
 export const Primary = Template.bind({});
+Primary.args = { onLogIn: () => undefined };

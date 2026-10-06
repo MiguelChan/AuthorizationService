@@ -1,14 +1,15 @@
+import { vi, type Mock } from 'vitest';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { ProfileDto, SignUpRequest, SignUpResponse } from '../../Models';
 import { apiClient } from './APIClient';
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe('APIClient', () => {
 
-  const mockPostFn = axios.post as jest.Mock;
+  const mockPostFn = axios.post as Mock;
   beforeEach(() => {
-    (axios.get as jest.Mock).mockResolvedValue({data: {token: 'csrf-token', headerName: 'X-XSRF-TOKEN'}});
+    (axios.get as Mock).mockResolvedValue({data: {token: 'csrf-token', headerName: 'X-XSRF-TOKEN'}});
   });
 
   afterEach(() => {

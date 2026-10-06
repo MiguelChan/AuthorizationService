@@ -1,6 +1,6 @@
 import { CssBaseline } from '@mui/material';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Application from './Components/App/App';
 
 import '@fontsource/roboto/300.css';
@@ -12,12 +12,16 @@ import {
   ProfileContext,
 } from './Components/Context';
 
-ReactDOM.render(
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('Application root element is missing');
+}
+
+createRoot(rootElement).render(
   <React.StrictMode>
     <CssBaseline />
     <ProfileContext.Provider value={initialProfileContext}>
       <Application />
     </ProfileContext.Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
