@@ -19,7 +19,9 @@ The historical generated TestNG functional suite is compiled but skipped by `-Ps
 
 The production profile is the default. Set PORT, JDBC_DATABASE_URL, JDBC_DATABASE_USERNAME, JDBC_DATABASE_PASSWORD, SALT_VALUE, BCRYPT_ITERATIONS and OAUTH_ISSUER. Configure HTTPS/TLS termination and exact CORS_ALLOWED_ORIGINS if a separate browser origin is needed. The dev profile is explicit and uses disposable local configuration; do not deploy it publicly.
 
-Apply existing migrations V1–V10 with the migration role before starting the application with its runtime role. The Flyway Gradle task retains explicit schema migration behavior rather than silently giving the application DDL privileges. Use separate database role credentials and verify table/sequence privileges when provisioning. Password/client hash compatibility is preserved; no data rewrite or issuer/credential rotation is hidden in the runtime migration.
+Apply all committed migrations (currently V1–V11) with the migration role before starting the application with its runtime role. The Flyway Gradle task retains explicit schema migration behavior rather than silently giving the application DDL privileges. Use separate database role credentials and verify table/sequence privileges when provisioning. Password/client hash compatibility is preserved; no data rewrite or issuer/credential rotation is hidden in the runtime migration.
+
+V11 adds the login-history retention index. The approved retention worker is enabled by default; see the [retention policy](retention-proposal.md) for batch limits and the `RETENTION_ENABLED=false` plus restart disable procedure.
 
 ## Compatibility changes and validation
 
