@@ -64,7 +64,7 @@ public class EntitiesAuthenticationProvider implements AuthenticationProvider {
 
         return EntitiesAuthenticationToken.builder()
             .principal(username)
-            .credentials(password)
+            .credentials(null)
             .profile(foundProfile)
             .build();
     }

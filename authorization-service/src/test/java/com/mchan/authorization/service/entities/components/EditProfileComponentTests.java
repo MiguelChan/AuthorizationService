@@ -37,6 +37,7 @@ public class EditProfileComponentTests {
     public void editProfile_should_editTheProfile() {
         String profileId = "AProfileID";
         EditProfileRequest request = EnhancedRandom.random(EditProfileRequest.class);
+        request.setPhoneNumber("1234567890");
         ProfileEntity rawProfile = EnhancedRandom.random(ProfileEntity.class);
 
         when(profileDao.getProfile(profileId)).thenReturn(rawProfile);

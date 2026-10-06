@@ -68,7 +68,7 @@ public class SignUpComponent {
      *
      * @throws Exception .
      */
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Optional<String> signUp(SignUpRequest request) throws Exception {
         // 1.- We validate the Request
         log.info("Validating sign-up request");

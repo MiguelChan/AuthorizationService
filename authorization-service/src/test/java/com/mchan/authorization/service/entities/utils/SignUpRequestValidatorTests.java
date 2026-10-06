@@ -40,6 +40,7 @@ public class SignUpRequestValidatorTests {
     @Test
     public void validateSignUpRequest_should_pass_when_allProvidedParametersAreSet() {
         SignUpRequest request = EnhancedRandom.random(SignUpRequest.class);
+        request.setPhoneNumber("1234567890");
         when(stringUtils.hasValidPassword(anyString())).thenReturn(true);
         when(emailValidator.isValid(anyString())).thenReturn(true);
 
@@ -54,6 +55,7 @@ public class SignUpRequestValidatorTests {
     @Test
     public void validateSignUpRequest_should_throwSignUpException_when_providedEmailIsInvalid() {
         SignUpRequest request = EnhancedRandom.random(SignUpRequest.class);
+        request.setPhoneNumber("1234567890");
         when(emailValidator.isValid(anyString())).thenReturn(false);
 
         assertThatThrownBy(() -> requestValidator.validateSignUpRequest(request)).isInstanceOfAny(SignUpException.class);
@@ -62,6 +64,7 @@ public class SignUpRequestValidatorTests {
     @Test
     public void validateSignUpRequest_should_throwSignUpException_when_providedPasswordIsInvalid() {
         SignUpRequest request = EnhancedRandom.random(SignUpRequest.class);
+        request.setPhoneNumber("1234567890");
         when(emailValidator.isValid(anyString())).thenReturn(true);
         when(stringUtils.hasValidPassword(anyString())).thenReturn(false);
 

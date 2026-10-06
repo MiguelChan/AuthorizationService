@@ -7,6 +7,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -72,7 +73,7 @@ public class ApplicationInputHttpTests {
         when(clientCredentials.issue(org.mockito.ArgumentMatchers.anyInt())).thenReturn(new ClientCredentials("client", "secret", 1));
         when(profileDao.getProfile("owner")).thenReturn(ProfileEntity.builder().profileId("owner").build());
         when(applicationDao.createApplication(any())).thenReturn(7);
-        mvc.perform(post("/api/applications").with(owner()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/applications").with(csrf()).with(owner()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("https://example.com", ",\"appType\":\"" + value + "\""))).andExpect(status().isOk());
         ArgumentCaptor<ApplicationEntity> captor = ArgumentCaptor.forClass(ApplicationEntity.class);
         verify(applicationDao).createApplication(captor.capture());
@@ -88,14 +89,14 @@ public class ApplicationInputHttpTests {
     @ParameterizedTest
     @ValueSource(strings = {"\"Mobile\"", "\"SERVICE\"", "\"\"", "1", "true", "{}"})
     public void unsupportedTypes_should_returnBadRequestBeforePersistence(String value) throws Exception {
-        mvc.perform(post("/api/applications").with(owner()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/applications").with(csrf()).with(owner()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("https://example.com", ",\"appType\":" + value))).andExpect(status().isBadRequest());
         verifyNoInteractions(profileDao, applicationDao);
     }
 
     @Test
     public void invalidCreationUrl_should_returnBadRequestBeforePersistence() throws Exception {
-        mvc.perform(post("/api/applications").with(owner()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(post("/api/applications").with(csrf()).with(owner()).contentType(MediaType.APPLICATION_JSON)
             .content(payload("https://example.com/callback", ""))).andExpect(status().isBadRequest());
         verifyNoInteractions(profileDao, applicationDao);
     }
@@ -103,7 +104,7 @@ public class ApplicationInputHttpTests {
     @Test
     public void invalidUpdateUrl_should_notWrite() throws Exception {
         when(applicationDao.getApplication(7)).thenReturn(ApplicationEntity.builder().profileId("owner").build());
-        mvc.perform(put("/api/applications/7").with(owner()).contentType(MediaType.APPLICATION_JSON)
+        mvc.perform(put("/api/applications/7").with(csrf()).with(owner()).contentType(MediaType.APPLICATION_JSON)
             .content("{\"application\":{\"redirectUrl\":\"https://example.com?next=app\"}}"))
             .andExpect(status().isBadRequest());
         verify(applicationDao, never()).updateApplication(any());

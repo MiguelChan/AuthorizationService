@@ -7,6 +7,9 @@ jest.mock('axios');
 describe('APIClient', () => {
 
   const mockPostFn = axios.post as jest.Mock;
+  beforeEach(() => {
+    (axios.get as jest.Mock).mockResolvedValue({data: {token: 'csrf-token', headerName: 'X-XSRF-TOKEN'}});
+  });
 
   afterEach(() => {
     mockPostFn.mockClear();
@@ -121,7 +124,7 @@ describe('APIClient', () => {
 
       return apiClient.signUp(signUpRequest).then((response: SignUpResponse) => {
         expect(response).toEqual(expectedResponse);
-        expect(mockPostFn).toHaveBeenCalledWith(FULL_URL, signUpRequest);
+        expect(mockPostFn).toHaveBeenCalledWith(FULL_URL, signUpRequest, {headers: {'X-XSRF-TOKEN': 'csrf-token'}});
       });
     });
 
@@ -140,7 +143,7 @@ describe('APIClient', () => {
 
       return apiClient.signUp(signUpRequest).catch((error: any) => {
         expect(error).toEqual(axiosError);
-        expect(mockPostFn).toHaveBeenCalledWith(FULL_URL, signUpRequest);
+        expect(mockPostFn).toHaveBeenCalledWith(FULL_URL, signUpRequest, {headers: {'X-XSRF-TOKEN': 'csrf-token'}});
       });
     });
   });

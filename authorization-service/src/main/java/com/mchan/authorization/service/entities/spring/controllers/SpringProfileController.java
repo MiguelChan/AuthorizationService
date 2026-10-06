@@ -9,6 +9,7 @@ import com.mchan.authorization.service.entities.components.GetProfileComponent;
 import com.mchan.authorization.service.entities.controllers.ProfileController;
 import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
+import com.mchan.authorization.service.exceptions.InvalidArgumentException;
 import com.mchan.authorization.service.spring.security.EntitiesAuthenticationToken;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.Authorization;
@@ -68,6 +69,8 @@ public class SpringProfileController implements ProfileController {
             return GetProfileResponse.builder()
                 .profile(profile)
                 .build();
+        } catch (InvalidArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
@@ -93,6 +96,8 @@ public class SpringProfileController implements ProfileController {
             return EditProfileResponse.builder()
                 .success(success)
                 .build();
+        } catch (InvalidArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
         } catch (Exception e) {
