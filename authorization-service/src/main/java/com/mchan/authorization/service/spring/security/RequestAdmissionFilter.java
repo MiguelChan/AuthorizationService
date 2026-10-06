@@ -119,7 +119,36 @@ public class RequestAdmissionFilter extends OncePerRequestFilter {
                 return;
             }
             if (!"GET".equals(request.getMethod()) && !"HEAD".equals(request.getMethod()) && !"OPTIONS".equals(request.getMethod())) {
-                byte[] body = request.getInputStream().readNBytes(maximumBody + 1);
+                long started = bodyTime();
+                int chunkSize = request.getContentLengthLong() > 0 ? (int) Math.min(request.getContentLengthLong(), 4096) : 4096;
+                byte[] chunk = new byte[Math.min(chunkSize, maximumBody + 1)];
+                java.io.ByteArrayOutputStream buffered = new java.io.ByteArrayOutputStream(Math.min(chunk.length, 512));
+                var stream = request.getInputStream();
+                while (buffered.size() <= maximumBody) {
+                    if (bodyTime() - started >= 2000000000L) {
+                        response.setHeader("Connection", "close");
+                        reject(response, 408, "request_timed_out");
+                        return;
+                    }
+                    int count;
+                    try {
+                        count = stream.read(chunk, 0, Math.min(chunk.length, maximumBody + 1 - buffered.size()));
+                    } catch (java.net.SocketTimeoutException e) {
+                        response.setHeader("Connection", "close");
+                        reject(response, 408, "request_timed_out");
+                        return;
+                    }
+                    if (bodyTime() - started >= 2000000000L) {
+                        response.setHeader("Connection", "close");
+                        reject(response, 408, "request_timed_out");
+                        return;
+                    }
+                    if (count < 0) {
+                        break;
+                    }
+                    buffered.write(chunk, 0, count);
+                }
+                byte[] body = buffered.toByteArray();
                 if (body.length > maximumBody) {
                     reject(response, 413, "request_too_large");
                     return;
@@ -138,6 +167,13 @@ public class RequestAdmissionFilter extends OncePerRequestFilter {
             }
             concurrent.release();
         }
+    }
+
+    /**
+     * Uses monotonic elapsed time for an absolute body budget, independent of per-read timeouts.
+     */
+    protected long bodyTime() {
+        return System.nanoTime();
     }
 
     private String clientKey(String authorization) {

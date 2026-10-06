@@ -14,6 +14,7 @@ a guarded, compare-and-set verification without version rotation.
 | --- | --- |
 | Dynamic requests in flight | 1,024; no application wait queue; excess receives 503/Retry-After |
 | Request body | 16 KiB, including unknown-length/chunked uploads; excess receives 413 |
+| Body time | Two-second elapsed budget checked around each blocking read; configured socket read adds at most two seconds; timeout returns 408/close; rejected bodies are not drained |
 | Headers/query | 16 KiB Tomcat headers, 1,024-character Authorization, 2,048-character query |
 | Body form parameters | At most 64 keys and 64 duplicate values per key; duplicate OAuth parameters rejected |
 | Global/peer/client rate | 5,000/s / 3,000/s / 2,000/s, token-bucket bursts equal to those rates |
@@ -50,6 +51,7 @@ Prerequisites: Java 25 JDK, Go, Python 3 and Docker. Build serially first:
 ./gradlew release -Pskip-functional-tests --no-daemon --max-workers=1
 python3 tools/validation/run.py
 python3 tools/validation/run.py --host-app --app-cpus 4
+python3 tools/validation/run.py --host-app --app-cpus 8
 ```
 
 The first command runs the existing backend/frontend release checks. Generated
@@ -62,8 +64,8 @@ no-new-privileges and DML-only runtime role. The Docker VM used here has **two C
 total**, shared by both containers; per-container caps are maxima, not reservations.
 No Docker settings are changed. CPU requests exceeding its capacity fail preflight.
 
-The host comparison uses an explicit bounded heap and four JVM-visible processors.
-It has **no OS CPU/RAM quota** and is not equivalent to a four-CPU container. Both
+The host comparison uses an explicit bounded heap and four/eight JVM-visible processors.
+It has **no OS CPU/RAM quota** and is not equivalent to a four/eight-CPU container. Both
 profiles retain the limited PostgreSQL container. The JVM recipe uses G1,
 InitialRAMPercentage=MaxRAMPercentage=60, MaxGCPauseMillis=50 and an explicit
 ActiveProcessorCount. Apply this recipe to deployment configuration; application
@@ -100,14 +102,18 @@ capacity or a long-duration reliability guarantee.
 
 | Profile / phase | Authorized / offered | Authorized rps | p95 / p99 ms | Rejected demand | Max in flight |
 | --- | --- | --- | --- | --- | --- |
-| host: ramp-100 | 500 / 500 | 100.094 | 6.026 / 11.280 | 0.0000% | 4 |
-| host: ramp-500 | 5,000 / 5,000 | 500.035 | 271.697 / 413.592 | 0.0000% | 171 |
-| host: target-1000 | 60,000 / 60,000 | 1000.001 | 1.057 / 3.702 | 0.0000% | 82 |
-| host: burst-1000 | 1,000 / 1,000 | 4638.892 | 209.175 / 214.158 | 0.0000% | 1000 |
-| restricted: ramp-100 | 500 / 500 | 100.130 | 4.663 / 7.145 | 0.0000% | 2 |
-| restricted: ramp-500 | 5,000 / 5,000 | 500.043 | 45.294 / 220.745 | 0.0000% | 62 |
-| restricted: target-1000 | 59,770 / 60,000 | 996.170 | 22.964 / 1163.178 | 0.3833% | 1000 |
-| restricted: burst-1000 | 1,000 / 1,000 | 3630.016 | 269.119 / 274.263 | 0.0000% | 1000 |
+| host-4: ramp-100 | 500 / 500 | 100.075 | 5.601 / 6.238 | 0.0000% | 2 |
+| host-4: ramp-500 | 5,000 / 5,000 | 500.047 | 291.521 / 487.705 | 0.0000% | 193 |
+| host-4: target-1000 | 60,000 / 60,000 | 1000.000 | 1.055 / 4.626 | 0.0000% | 85 |
+| host-4: burst-1000 | 1,000 / 1,000 | 3860.015 | 254.688 / 258.470 | 0.0000% | 1000 |
+| restricted-2: ramp-100 | 500 / 500 | 100.153 | 4.900 / 8.901 | 0.0000% | 2 |
+| restricted-2: ramp-500 | 4,814 / 5,000 | 481.447 | 1001.176 / 1139.119 | 3.7200% | 473 |
+| restricted-2: target-1000 | 59,937 / 60,000 | 998.955 | 1.697 / 589.428 | 0.1050% | 1000 |
+| restricted-2: burst-1000 | 1,000 / 1,000 | 3427.020 | 281.975 / 290.178 | 0.0000% | 1000 |
+| host-8: ramp-100 | 500 / 500 | 100.147 | 5.523 / 6.548 | 0.0000% | 2 |
+| host-8: ramp-500 | 5,000 / 5,000 | 500.038 | 255.157 / 412.265 | 0.0000% | 153 |
+| host-8: target-1000 | 60,000 / 60,000 | 1000.000 | 1.057 / 3.702 | 0.0000% | 110 |
+| host-8: burst-1000 | 1,000 / 1,000 | 3643.261 | 235.737 / 273.725 | 0.0000% | 1000 |
 
 The earlier two-CPU container run completed 60,000/60,000 at 1,000.004 authorized
 requests/s (p95 1.114ms, p99 51.543ms), and a 1,000-in-flight burst with p95 231.112ms.
@@ -125,7 +131,7 @@ never credentials, SQL parameters or exception messages.
 
 Before a production claim, validate cold-start readiness/warmup, prolonged mixed
 traffic, larger/varied tenants and 64-scope tokens, realistic network latency,
-receiving-service concurrency, database/network TLS, distributed rates and
+receiving-service concurrency, ingress absolute header/TLS deadlines, database/network TLS, distributed rates and
 monitoring. The current fixture reuses one active token/permission and a 1,000-entry
 owner catalog. Token issuance has its own protective budget and was not benchmarked
 at 1,000/s. Frontend dependency debt and consumer membership/user roles remain

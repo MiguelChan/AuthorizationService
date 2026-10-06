@@ -18,6 +18,39 @@ import org.springframework.security.authentication.BadCredentialsException;
  */
 public class CapacitySecurityTests {
     @Test
+    public void trickledBodies_should_haveAnAbsoluteDeadlineAndReleaseAdmission() throws Exception {
+        AtomicLong clock = new AtomicLong();
+        RequestAdmissionFilter filter = new RequestAdmissionFilter(1024, 1, 100, 100, false) {
+            @Override
+            protected long bodyTime() {
+                return clock.get();
+            }
+        };
+        MockHttpServletRequest trickle = new MockHttpServletRequest("POST", "/oauth/introspect") {
+            @Override
+            public jakarta.servlet.ServletInputStream getInputStream() {
+                return new org.springframework.mock.web.DelegatingServletInputStream(new java.io.ByteArrayInputStream(new byte[3])) {
+                    @Override
+                    public int read(byte[] bytes, int offset, int length) {
+                        clock.addAndGet(1100000000L);
+                        bytes[offset] = 'a';
+                        return 1;
+                    }
+                };
+            }
+        };
+        MockHttpServletResponse response = new MockHttpServletResponse();
+        filter.doFilter(trickle, response, (req, res) -> {
+            throw new AssertionError("A trickled body executed after its deadline");
+        });
+        assertThat(response.getStatus()).isEqualTo(408);
+        assertThat(response.getHeader("Connection")).isEqualTo("close");
+        MockHttpServletResponse next = new MockHttpServletResponse();
+        filter.doFilter(new MockHttpServletRequest("GET", "/api/ping"), next, (req, res) -> res.getWriter().write("available"));
+        assertThat(next.getContentAsString()).isEqualTo("available");
+    }
+
+    @Test
     public void generatedSecrets_should_beVersionedKeyedAndConstantLength() {
         String secret = "A".repeat(43);
         ClientSecretHasher hashes = new ClientSecretHasher("isolated-pepper");

@@ -89,7 +89,7 @@ public class ClientCredentialsComponentTests {
         rotated.setVersion(5);
         when(mapper.findActive("legacy")).thenReturn(stored, rotated);
         assertThat(component.authenticate("legacy", secret)).isNull();
-        when(mapper.findActive("legacy")).thenReturn(stored, null);
+        when(mapper.findActive("legacy")).thenReturn(stored).thenReturn(null);
         assertThat(component.authenticate("legacy", secret)).isNull();
         Mockito.verify(mapper, Mockito.never()).save(Mockito.any());
     }

@@ -50,7 +50,7 @@ The stack adds browser CSRF and exact-origin CORS, production-default deployment
 bounded body/header/query/metadata/catalog handling, bounded authentication
 concurrency and login failure state, and per-instance rate budgets. Actual packaged
 TLS tests reject forged session mutations, owner IDOR, duplicate credentials/forms,
-chunked oversized bodies and an SQL-injection username; they exercise the real
+chunked oversized bodies, slow trickled uploads and an SQL-injection username; they exercise the real
 receiving service before and after grant revocation. Legacy client hash upgrades
 preserve credential versions; compare-and-set regression tests cover rotation,
 revocation and concurrent hash-only upgrade races. Human BCrypt cost is unchanged.

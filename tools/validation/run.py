@@ -879,6 +879,26 @@ try:
         expected=400,
         name="unsupported_password_grant",
     )
+    # Keep sending bytes within the socket timeout: the total upload deadline must still fire.
+    with contextlib.closing(
+        http.client.HTTPSConnection("localhost", args.port, context=context, timeout=5)
+    ) as connection:
+        connection.putrequest("POST", "/oauth/introspect")
+        connection.putheader("Authorization", authorization)
+        connection.putheader("Content-Type", "application/x-www-form-urlencoded")
+        connection.putheader("Transfer-Encoding", "chunked")
+        connection.endheaders()
+        started = time.monotonic()
+        for index in range(4):
+            if index:
+                time.sleep(0.75)
+            connection.send(b"1\r\nt\r\n")
+        response = connection.getresponse()
+        check("trickled_upload_has_absolute_deadline", response.status, 408)
+        response.read()
+        assert (
+            time.monotonic() - started < 3.5
+        ), "Upload waited for a fresh per-read timeout instead of its absolute budget"
     # Owner catalog quotas include inactive entries; bounded pages still work at the limit.
     sql(
         "INSERT INTO auth_db.application_endpoints(application_id,http_method,path,action,description) SELECT "
