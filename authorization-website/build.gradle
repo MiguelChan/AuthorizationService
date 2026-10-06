@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.github.node-gradle:gradle-node-plugin:3.1.1"
+        classpath "com.github.node-gradle:gradle-node-plugin:7.1.0"
     }
 }
 
@@ -16,14 +16,18 @@ String testsExecutedMarkerName = "${projectDir}/.tests.executed";
 // Here we configure the current NodeJS version.
 node {
     // We set current NodeJS Version.
-    version = '12.2.0';
+    version = '24.9.0';
     // We set current NPM Version.
-    npmVersion = '7.8.0';
+    npmVersion = '11.6.0';
+    npmInstallCommand = 'ci';
     // We tell the plug-in whether we should download the NodeJS Binaries or not.
     download = true;
 }
 
+npmInstall { args = ['--legacy-peer-deps', '--no-audit', '--no-fund'] }
+
 npm_run_build {
+    environment = ['NODE_OPTIONS': '--openssl-legacy-provider']
     inputs.files fileTree("public")
     inputs.files fileTree("src")
 
@@ -35,9 +39,9 @@ npm_run_build {
 
 task packageNpmApp(type: Zip) {
     dependsOn npm_run_build;
-    baseName 'authorization-website';
-    extension 'jar';
-    destinationDir file("${projectDir}/build_packageNpmApp");
+    archiveBaseName = 'authorization-website';
+    archiveExtension = 'jar';
+    destinationDirectory = file("${projectDir}/build_packageNpmApp");
     from('build') {
         into 'static';
     };
@@ -47,10 +51,10 @@ configurations {
     npmResources
 }
 
-configurations.default.extendsFrom(configurations.npmResources);
+configurations.getByName('default').extendsFrom(configurations.npmResources);
 
 artifacts {
-    npmResources(packageNpmApp.archivePath) {
+    npmResources(packageNpmApp.archiveFile) {
         builtBy packageNpmApp
         type 'jar';
     }
@@ -59,7 +63,7 @@ artifacts {
 assemble.dependsOn packageNpmApp;
 
 clean {
-    delete packageNpmApp.archivePath
+    delete packageNpmApp.archiveFile
     delete file("${projectDir}/build_packageNpmApp")
     delete testsExecutedMarkerName
 }
@@ -72,7 +76,8 @@ tasks.register('release') {
 task test(type: NpmTask) {
     dependsOn assemble
 
-    args = ['run', 'test', '--', '--watchAll=false']
+    args = ['run', 'test', '--', '--watchAll=false', '--runInBand']
+    environment = ['NODE_OPTIONS': '--openssl-legacy-provider']
 
     inputs.files fileTree('src')
     inputs.file 'package.json'

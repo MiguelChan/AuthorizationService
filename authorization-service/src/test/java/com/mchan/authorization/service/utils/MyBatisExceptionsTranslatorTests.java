@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import com.mchan.authorization.service.exceptions.DatabaseException;
 import com.mchan.authorization.service.exceptions.DuplicateEntityException;
 import com.mchan.authorization.service.utils.MyBatisExceptionsTranslator;
-import io.github.benas.randombeans.api.EnhancedRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DuplicateKeyException;
@@ -37,7 +36,7 @@ public class MyBatisExceptionsTranslatorTests {
 
     @Test
     public void getException_should_returnDatabaseException_when_exceptionIsUnknown() {
-        Exception exception = EnhancedRandom.random(RuntimeException.class);
+        Exception exception = new RuntimeException("fixture-failure");
 
         Exception theException = translator.getException(exception);
 

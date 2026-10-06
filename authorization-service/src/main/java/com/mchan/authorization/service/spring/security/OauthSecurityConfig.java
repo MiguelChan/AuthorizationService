@@ -1,22 +1,27 @@
 package com.mchan.authorization.service.spring.security;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Isolates OAuth client authentication from user Basic/form/session authentication.
+ * Keeps confidential-client OAuth authentication stateless and separate from administrator sessions.
  */
 @Configuration
-@Order(1)
-public class OauthSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.antMatcher("/oauth/**").cors().and().csrf().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-            .authorizeRequests().anyRequest().permitAll();
-        // Each OAuth controller authenticates a confidential client and never accepts a user session.
+public class OauthSecurityConfig {
+    /**
+     * Delegates confidential-client verification exclusively to the OAuth controller.
+     */
+    @Bean
+    @Order(1)
+    public SecurityFilterChain oauthSecurity(HttpSecurity http) throws Exception {
+        return http.securityMatcher("/oauth/**").cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()).build();
     }
 }

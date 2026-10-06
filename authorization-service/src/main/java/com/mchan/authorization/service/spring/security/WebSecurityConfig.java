@@ -1,20 +1,17 @@
 package com.mchan.authorization.service.spring.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -25,11 +22,11 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  */
 @Configuration
 @EnableWebSecurity
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig {
 
     private static final String[] WEB_ALLOW_LIST =
       {
-        "/v2/api-docs",
+        "/v3/api-docs/**",
         "/configuration/ui",
         "/swagger-resources/**",
         "/configuration/security",
@@ -39,53 +36,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       };
 
     /**
-     * .
-     *
-     * @param web .
-     *
-     * @throws Exception .
+     * Protects administrator browser sessions and explicit stateless Basic clients.
      */
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers(WEB_ALLOW_LIST);
-    }
-
-    /**
-     * .
-     *
-     * @param http .
-     *
-     * @throws Exception .
-     */
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .cors()
-        .and()
-            .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-            .ignoringRequestMatchers(WebSecurityConfig::isExplicitStatelessBasic)
-        .and()
-            .authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/api/sign-up").permitAll()
-            .antMatchers(HttpMethod.GET, "/api/ping", "/api/deep_ping", "/api/csrf").permitAll()
-            .antMatchers(HttpMethod.GET, "/", "/login/**", "/register", "/index.html", "/static/**",
-                "/favicon.ico", "/manifest.json", "/robots.txt").permitAll()
-            .antMatchers("/error").permitAll()
-            .anyRequest().authenticated()
-        .and()
-            .exceptionHandling()
-            .defaultAuthenticationEntryPointFor(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-                new AntPathRequestMatcher("/api/**"))
-        .and()
-            .formLogin()
-            .loginPage("/login")
-            .defaultSuccessUrl("/api/profile")
-            .permitAll()
-        .and()
-            .logout()
-            .permitAll()
-        .and()
-            .httpBasic();
+    @Bean
+    public org.springframework.security.web.SecurityFilterChain applicationSecurity(HttpSecurity http,
+                                                                                   EntitiesAuthenticationProvider provider) throws Exception {
+        http.cors(org.springframework.security.config.Customizer.withDefaults())
+            .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRequestHandler(new org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler())
+                .ignoringRequestMatchers(WebSecurityConfig::isExplicitStatelessBasic))
+            .authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(WEB_ALLOW_LIST).permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/sign-up").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/ping", "/api/deep_ping", "/api/csrf").permitAll()
+                .requestMatchers(HttpMethod.GET, "/", "/login/**", "/register", "/index.html", "/static/**", "/favicon.ico",
+                    "/manifest.json", "/robots.txt").permitAll()
+                .requestMatchers("/error").permitAll().anyRequest().authenticated())
+            .exceptionHandling(exceptions -> exceptions.defaultAuthenticationEntryPointFor(
+                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED), request -> request.getRequestURI().startsWith("/api/")))
+            .authenticationProvider(provider)
+            .formLogin(login -> login.loginPage("/login").defaultSuccessUrl("/api/profile").permitAll())
+            .logout(logout -> logout.permitAll())
+            .httpBasic(org.springframework.security.config.Customizer.withDefaults());
+        return http.build();
     }
 
     /**

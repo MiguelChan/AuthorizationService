@@ -18,12 +18,12 @@ import com.mchan.authorization.service.spring.security.OauthSecurityConfig;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
@@ -34,9 +34,9 @@ import org.springframework.test.web.servlet.MockMvc;
 public class OauthHttpTests {
     @Autowired
     private MockMvc mvc;
-    @MockBean
+    @MockitoBean
     private ClientCredentialsComponent credentials;
-    @MockBean
+    @MockitoBean
     private OauthTokensComponent tokens;
 
     @Test
@@ -87,7 +87,7 @@ public class OauthHttpTests {
         request.addHeader("X-Forwarded-Proto", "https");
         request.addParameter("grant_type", "client_credentials");
         SpringOauthController controller = new SpringOauthController(credentials, tokens, true);
-        org.junit.jupiter.api.Assertions.assertEquals(400, controller.token(request).getStatusCodeValue());
+        org.junit.jupiter.api.Assertions.assertEquals(400, controller.token(request).getStatusCode().value());
         verifyNoInteractions(credentials, tokens);
     }
 

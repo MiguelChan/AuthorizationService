@@ -23,12 +23,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpEntity;
@@ -36,34 +34,38 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 /**
  * Verifies actual servlet error dispatch instead of MockMvc's direct exception handling.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
     classes = ApiErrorDispatchTests.ErrorApplication.class)
+@org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate
 public class ApiErrorDispatchTests {
 
     @Configuration
-    @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-        SecurityAutoConfiguration.class})
+    @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
+        SecurityAutoConfiguration.class,
+        org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration.class,
+        org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration.class})
     @Import({SpringApplicationsController.class, CatchAllController.class})
     static class ErrorApplication {
     }
 
     @Autowired
     private TestRestTemplate rest;
-    @MockBean
+    @MockitoBean
     private ClientCredentialsComponent clientCredentials;
-    @MockBean
+    @MockitoBean
     private CreateApplicationComponent createApplicationComponent;
-    @MockBean
+    @MockitoBean
     private DeleteApplicationComponent deleteApplicationComponent;
-    @MockBean
+    @MockitoBean
     private UpdateApplicationComponent updateApplicationComponent;
-    @MockBean
+    @MockitoBean
     private ApplicationOwnershipComponent applicationOwnershipComponent;
-    @MockBean
+    @MockitoBean
     private AuthenticationFacade authenticationFacade;
 
     @BeforeEach

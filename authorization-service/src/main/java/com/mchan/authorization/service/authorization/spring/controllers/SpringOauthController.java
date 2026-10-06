@@ -4,6 +4,7 @@ import com.mchan.authorization.service.authorization.components.ClientCredential
 import com.mchan.authorization.service.authorization.components.OauthTokensComponent;
 import com.mchan.authorization.service.authorization.dao.entities.ClientCredentialEntity;
 import com.mchan.authorization.service.exceptions.OauthException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

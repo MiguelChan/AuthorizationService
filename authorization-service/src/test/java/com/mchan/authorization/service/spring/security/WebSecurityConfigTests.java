@@ -36,12 +36,12 @@ import com.mchan.authorization.service.spring.CatchAllController;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -55,25 +55,25 @@ public class WebSecurityConfigTests {
 
     @Autowired
     private MockMvc mvc;
-    @MockBean
+    @MockitoBean
     private ClientCredentialsComponent clientCredentials;
-    @MockBean
+    @MockitoBean
     private CreateApplicationComponent createApplicationComponent;
-    @MockBean
+    @MockitoBean
     private UpdateApplicationComponent updateApplicationComponent;
-    @MockBean
+    @MockitoBean
     private DeleteApplicationComponent deleteApplicationComponent;
-    @MockBean
+    @MockitoBean
     private GetProfileComponent getProfileComponent;
-    @MockBean
+    @MockitoBean
     private EditProfileComponent editProfileComponent;
-    @MockBean
+    @MockitoBean
     private SignUpComponent signUpComponent;
-    @MockBean
+    @MockitoBean
     private LogInComponent logInComponent;
-    @MockBean
+    @MockitoBean
     private HealthDao healthDao;
-    @MockBean
+    @MockitoBean
     private ApplicationDao applicationDao;
 
     @Test

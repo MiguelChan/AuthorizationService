@@ -1,17 +1,18 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.6'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.springframework.boot' version '4.1.1'
+    id 'io.spring.dependency-management' version '1.1.7'
     id 'java'
-    id 'org.flywaydb.flyway' version '7.7.2'
+    id 'org.flywaydb.flyway' version '12.0.2'
     id 'checkstyle'
     id 'jacoco'
 }
 
 group = 'com.mchan'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+java { toolchain { languageVersion = JavaLanguageVersion.of(25) } }
 
 configurations {
+    flywayMigration
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -22,23 +23,25 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
-    implementation 'commons-validator:commons-validator:1.4.1'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:4.1.0'
+    implementation 'commons-validator:commons-validator:1.10.1'
     implementation project(':authorization-service-shared-lib')
-    implementation 'io.springfox:springfox-swagger2:3.0.0'
-    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
+    flywayMigration 'org.flywaydb:flyway-database-postgresql:12.0.2'
     runtimeOnly project(':authorization-website')
 
     annotationProcessor 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-restclient-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'io.github.benas:random-beans:3.7.0'
 }
@@ -60,10 +63,12 @@ flyway {
     user = System.getenv().get('JDBC_DATABASE_USERNAME')
     password = System.getenv().get('JDBC_DATABASE_PASSWORD')
 
+    configurations = ['runtimeClasspath', 'flywayMigration']
     schemas = ['auth_db']
 }
 
 checkstyle {
+    toolVersion = '12.3.0'
     ignoreFailures = false
     maxWarnings = 0
 }
@@ -88,7 +93,7 @@ tasks.register('copyJar', Copy) {
 }
 
 jacoco {
-    toolVersion = '0.8.7'
+    toolVersion = '0.8.14'
     reportsDirectory.set(file("$buildDir/jacoco"))
 }
 

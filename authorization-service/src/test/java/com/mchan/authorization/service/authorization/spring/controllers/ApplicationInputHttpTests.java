@@ -35,10 +35,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
@@ -50,15 +50,17 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
     CreateApplicationComponent.class, UpdateApplicationComponent.class, ApplicationMapper.class,
     ApplicationInputValidator.class, ObjectUtils.class})
 public class ApplicationInputHttpTests {
+    @MockitoBean
+    private com.mchan.authorization.service.spring.security.EntitiesAuthenticationProvider authenticationProvider;
     @Autowired
     private MockMvc mvc;
-    @MockBean
+    @MockitoBean
     private ClientCredentialsComponent clientCredentials;
-    @MockBean
+    @MockitoBean
     private ApplicationDao applicationDao;
-    @MockBean
+    @MockitoBean
     private ProfileDao profileDao;
-    @MockBean
+    @MockitoBean
     private DeleteApplicationComponent deleteApplicationComponent;
 
     /**

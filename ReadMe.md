@@ -70,3 +70,8 @@ Example application payload:
 
 Production requires an explicit `OAUTH_ISSUER` and HTTPS. The development profile
 allows HTTP only on loopback; see the OAuth deployment configuration.
+
+## Runtime and audit
+
+Use the [supported Java/Spring build and deployment configuration](docs/runtime-upgrade.md).
+The [original-design and security audit](docs/security-audit-2026-10-05.md) records implemented behavior, reproduced defects and remaining user-role capabilities.

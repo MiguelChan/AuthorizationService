@@ -21,11 +21,11 @@ import com.mchan.authorization.service.entities.spring.controllers.SpringProfile
 import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
@@ -37,11 +37,11 @@ import org.springframework.test.web.servlet.MockMvc;
 public class BrowserSecurityTests {
     @Autowired
     private MockMvc mvc;
-    @MockBean
+    @MockitoBean
     private LogInComponent logins;
-    @MockBean
+    @MockitoBean
     private GetProfileComponent profiles;
-    @MockBean
+    @MockitoBean
     private EditProfileComponent edits;
 
     @Test

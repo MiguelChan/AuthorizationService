@@ -11,8 +11,7 @@ import com.mchan.authorization.service.entities.spring.facade.AuthenticationFaca
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
 import com.mchan.authorization.service.spring.security.EntitiesAuthenticationToken;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.Authorization;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,9 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * The rest controller for the {@link com.mchan.authorization.service.entities.controllers.ProfileController}.
  */
-@Api(
-    authorizations = @Authorization("basic")
-)
+@SecurityRequirement(name = "basic")
 @Log4j2
 @RestController
 @RequestMapping(value = "/api", produces = "application/json")

@@ -16,7 +16,7 @@ import com.mchan.authorization.service.authorization.controllers.ApplicationsCon
 import com.mchan.authorization.service.entities.spring.facade.AuthenticationFacade;
 import com.mchan.authorization.service.exceptions.EntityNotFoundException;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
