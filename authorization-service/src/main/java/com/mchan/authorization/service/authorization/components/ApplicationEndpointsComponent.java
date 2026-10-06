@@ -33,6 +33,9 @@ public class ApplicationEndpointsComponent {
     public ApplicationEndpoint create(int appId, ApplicationEndpoint input) {
         validateIdentity(input);
         requireActiveApplication(appId);
+        if (mapper.count(appId) >= 1000) {
+            throw new InvalidArgumentException("Application endpoint quota reached");
+        }
         ApplicationEndpoint endpoint = input.toBuilder().endpointId(0).applicationId(appId).active(true)
             .description(description(input.getDescription())).build();
         try {
@@ -47,7 +50,17 @@ public class ApplicationEndpointsComponent {
      * Lists active and inactive catalog entries for the owner.
      */
     public List<ApplicationEndpoint> list(int appId) {
-        return mapper.list(appId);
+        return list(appId, 100, 0);
+    }
+
+    /**
+     * Returns a bounded keyset page instead of materializing an entire tenant catalog.
+     */
+    public java.util.List<ApplicationEndpoint> list(int appId, int limit, int afterId) {
+        if (limit < 1 || limit > 100 || afterId < 0) {
+            throw new InvalidArgumentException("Page limit must be 1..100 and cursor must be nonnegative");
+        }
+        return mapper.list(appId, limit, afterId);
     }
 
     /**

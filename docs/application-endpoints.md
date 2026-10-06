@@ -24,3 +24,12 @@ return 409. Migration V8 creates an empty catalog without changing applications.
 These defaults implement the model/API decisions in #38 under Miguel's request
 to complete all remaining issues. Directed grants and OAuth build on these IDs;
 scheduling and endpoint execution are outside this contract.
+
+## Catalog bounds
+
+GET returns at most `limit` records (default 100, supported 1..100). For the next page,
+pass `afterId` equal to the last returned `endpointId`; cursors are nonnegative.
+The response remains a JSON array. Clients must paginate rather than assuming a
+complete catalog in one response. Creation allows at most 1,000 endpoint identities
+per application, including inactive entries, and serializes quota checks with writes.
+At the quota, register another application or design an explicit archival process.

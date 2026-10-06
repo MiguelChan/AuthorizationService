@@ -75,3 +75,5 @@ allows HTTP only on loopback; see the OAuth deployment configuration.
 
 Use the [supported Java/Spring build and deployment configuration](docs/runtime-upgrade.md).
 The [original-design and security audit](docs/security-audit-2026-10-05.md) records implemented behavior, reproduced defects and remaining user-role capabilities.
+
+See [bounded capacity and reproducible local validation](docs/capacity.md) for resource limits, measured workloads and remaining deployment work.

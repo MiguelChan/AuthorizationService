@@ -19,7 +19,7 @@ public class ApplicationInputValidator {
      * @param value Requested redirect URL.
      */
     public void validateRedirectUrl(String value) {
-        if (value == null) {
+        if (value == null || value.length() > 2048) {
             throw new InvalidArgumentException("Redirect URL is required");
         }
         try {
@@ -37,6 +37,22 @@ public class ApplicationInputValidator {
             }
         } catch (URISyntaxException e) {
             throw new InvalidArgumentException("Redirect URL must be a valid HTTP(S) origin");
+        }
+    }
+
+    /**
+     * Bounds optional display metadata before persistence or structured logging.
+     */
+    public void validateMetadata(com.mchan.authorization.lib.models.Application application) {
+        bounded(application.getAppName(), 128);
+        bounded(application.getShortDescription(), 1024);
+        bounded(application.getAppIcon(), 2048);
+        bounded(application.getAppHomePage(), 2048);
+    }
+
+    private void bounded(String value, int maximum) {
+        if (value != null && (value.isBlank() || value.length() > maximum || value.chars().anyMatch(Character::isISOControl))) {
+            throw new InvalidArgumentException("Application metadata exceeds supported limits");
         }
     }
 }

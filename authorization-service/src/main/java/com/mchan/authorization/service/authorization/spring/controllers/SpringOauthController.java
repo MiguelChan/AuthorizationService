@@ -26,11 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/oauth")
+@lombok.extern.slf4j.Slf4j
 public class SpringOauthController {
     private static final Set<String> LOOPBACK = Set.of("127.0.0.1", "::1", "0:0:0:0:0:0:0:1");
     private final ClientCredentialsComponent credentials;
     private final OauthTokensComponent tokens;
     private final boolean allowInsecureLocalhost;
+    private final java.util.concurrent.atomic.AtomicLong lastFailureLog = new java.util.concurrent.atomic.AtomicLong();
 
     /**
      * Creates confidential-client OAuth endpoints with explicit transport configuration.
@@ -138,13 +140,29 @@ public class SpringOauthController {
         } catch (OauthException e) {
             return response(e.getStatus(), Map.of("error", e.getError()));
         } catch (RuntimeException e) {
-            return response(500, Map.of("error", "server_error"));
+            Throwable cause = e;
+            while (cause.getCause() != null && cause.getCause() != cause) {
+                cause = cause.getCause();
+            }
+            String state = cause instanceof java.sql.SQLException sql ? sql.getSQLState() : "none";
+            long now = System.nanoTime();
+            long previous = lastFailureLog.get();
+            if (now - previous > 5000000000L && lastFailureLog.compareAndSet(previous, now)) {
+                // Never log submitted secrets, tokens, SQL parameters or exception messages.
+                log.warn("OAuth operation failed: category={}, sqlState={}", cause.getClass().getSimpleName(), state);
+            }
+            boolean unavailable = e instanceof org.springframework.dao.TransientDataAccessException
+                || cause instanceof java.sql.SQLTransientException || "57014".equals(state) || "53300".equals(state);
+            return response(unavailable ? 503 : 500, Map.of("error", unavailable ? "temporarily_unavailable" : "server_error"));
         }
     }
 
     private ResponseEntity<Map<String, Object>> response(int status, Map<String, Object> body) {
         ResponseEntity.BodyBuilder response = ResponseEntity.status(status).contentType(MediaType.APPLICATION_JSON)
             .header(HttpHeaders.CACHE_CONTROL, "no-store").header(HttpHeaders.PRAGMA, "no-cache");
+        if (status == 429 || status == 503) {
+            response.header(HttpHeaders.RETRY_AFTER, "1");
+        }
         if (status == 401) {
             response.header(HttpHeaders.WWW_AUTHENTICATE, "Basic realm=\"oauth\"");
         }

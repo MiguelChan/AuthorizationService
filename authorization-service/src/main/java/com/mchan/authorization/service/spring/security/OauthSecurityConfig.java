@@ -19,8 +19,9 @@ public class OauthSecurityConfig {
      */
     @Bean
     @Order(1)
-    public SecurityFilterChain oauthSecurity(HttpSecurity http) throws Exception {
-        return http.securityMatcher("/oauth/**").cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
+    public SecurityFilterChain oauthSecurity(HttpSecurity http, RequestAdmissionFilter admission) throws Exception {
+        return http.securityMatcher("/oauth/**")
+            .addFilterBefore(admission, org.springframework.security.web.csrf.CsrfFilter.class).cors(Customizer.withDefaults()).csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll()).build();
     }

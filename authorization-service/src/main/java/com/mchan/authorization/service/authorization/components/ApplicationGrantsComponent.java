@@ -62,7 +62,17 @@ public class ApplicationGrantsComponent {
      * Lists incoming grants, including their revoked state, for the target owner.
      */
     public List<ApplicationGrant> list(int targetId) {
-        return mapper.list(targetId);
+        return list(targetId, 100, 0);
+    }
+
+    /**
+     * Returns a bounded keyset page instead of materializing an entire tenant catalog.
+     */
+    public java.util.List<ApplicationGrant> list(int targetId, int limit, int afterId) {
+        if (limit < 1 || limit > 100 || afterId < 0) {
+            throw new InvalidArgumentException("Page limit must be 1..100 and cursor must be nonnegative");
+        }
+        return mapper.list(targetId, limit, afterId);
     }
 
     /**

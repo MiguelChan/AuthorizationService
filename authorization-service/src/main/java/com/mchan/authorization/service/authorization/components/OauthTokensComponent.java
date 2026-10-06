@@ -2,7 +2,7 @@ package com.mchan.authorization.service.authorization.components;
 
 import com.mchan.authorization.lib.models.ApplicationGrant;
 import com.mchan.authorization.service.authorization.dao.entities.ClientCredentialEntity;
-import com.mchan.authorization.service.authorization.dao.entities.OauthPermissionEntity;
+import com.mchan.authorization.service.authorization.dao.entities.OauthIntrospectionEntity;
 import com.mchan.authorization.service.authorization.dao.entities.OauthTokenEntity;
 import com.mchan.authorization.service.authorization.dao.mappers.ApplicationGrantsMapper;
 import com.mchan.authorization.service.authorization.dao.mappers.ClientCredentialsMapper;
@@ -72,6 +72,9 @@ public class OauthTokensComponent {
             throw new OauthException("invalid_target", 400);
         }
         List<ApplicationGrant> allowed = grants.allowed(source.getApplicationId(), target.getApplicationId());
+        if (allowed.size() > 1000) {
+            throw new OauthException("temporarily_unavailable", 503);
+        }
         Set<String> available = allowed.stream().map(ApplicationGrant::getAction).collect(Collectors.toCollection(LinkedHashSet::new));
         Set<String> requested = available;
         if (scope != null) {
@@ -113,29 +116,32 @@ public class OauthTokensComponent {
             return Map.of("active", false);
         }
         String hash = hash(value);
-        OauthTokenEntity token = tokens.findActive(hash);
-        if (token == null || token.getTargetId() != recipient.getApplicationId() || !issuer.equals(token.getIssuer())
-            || token.getTargetCredentialVersion() != recipient.getVersion() || !token.getExpiresAt().after(new Date())) {
-            return Map.of("active", false);
-        }
-        List<OauthPermissionEntity> permitted = tokens.permissions(hash);
+        List<OauthIntrospectionEntity> permitted = tokens.introspection(hash, recipient.getApplicationId(), recipient.getVersion(), issuer);
         if (permitted.isEmpty()) {
             return Map.of("active", false);
         }
+        if (permitted.size() > 64) {
+            throw new OauthException("temporarily_unavailable", 503);
+        }
+        OauthIntrospectionEntity token = permitted.getFirst();
+        if (token.getTargetId() != recipient.getApplicationId() || !issuer.equals(token.getIssuer())
+            || token.getTargetCredentialVersion() != recipient.getVersion() || !token.getExpiresAt().after(new Date())) {
+            return Map.of("active", false);
+        }
         List<Map<String, Object>> permissions = new ArrayList<>();
-        for (OauthPermissionEntity permission : permitted) {
+        for (OauthIntrospectionEntity permission : permitted) {
             permissions.add(Map.of("endpoint_id", permission.getEndpointId(), "action", permission.getAction(),
                 "http_method", permission.getHttpMethod(), "path", permission.getPath()));
         }
         Map<String, Object> result = new LinkedHashMap<>();
         result.put("active", true);
-        result.put("client_id", tokens.clientId(token.getSourceId()));
+        result.put("client_id", token.getSourceClientId());
         result.put("sub", Integer.toString(token.getSourceId()));
         result.put("aud", recipient.getClientId());
         result.put("iss", issuer);
         result.put("iat", token.getIssuedAt().toInstant().getEpochSecond());
         result.put("exp", token.getExpiresAt().toInstant().getEpochSecond());
-        result.put("scope", permitted.stream().map(OauthPermissionEntity::getAction).collect(Collectors.joining(" ")));
+        result.put("scope", permitted.stream().map(OauthIntrospectionEntity::getAction).collect(Collectors.joining(" ")));
         result.put("permissions", permissions);
         return result;
     }
@@ -156,11 +162,7 @@ public class OauthTokensComponent {
     private String hash(String value) {
         try {
             byte[] digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.US_ASCII));
-            StringBuilder result = new StringBuilder(64);
-            for (byte b : digest) {
-                result.append(String.format("%02x", b & 0xff));
-            }
-            return result.toString();
+            return java.util.HexFormat.of().formatHex(digest);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalStateException("Token hashing is unavailable", e);
         }

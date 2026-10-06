@@ -44,9 +44,11 @@ public class SpringApplicationEndpointsController {
      * Lists catalog metadata including deactivated entries.
      */
     @GetMapping
-    public List<ApplicationEndpoint> list(@PathVariable int appId) {
+    public List<ApplicationEndpoint> list(@PathVariable int appId,
+        @org.springframework.web.bind.annotation.RequestParam(defaultValue = "100") int limit,
+        @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int afterId) {
         access.requireOwner(appId);
-        return endpoints.list(appId);
+        return endpoints.list(appId, limit, afterId);
     }
 
     /**

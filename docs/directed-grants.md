@@ -23,3 +23,10 @@ application must introspect and enforce the endpoint/action before executing a
 resource; the authorization service does not proxy registered endpoint calls.
 These decisions implement #39 under Miguel's request to complete the remaining
 issues. Scheduling, delegated user access and wildcard permissions are excluded.
+
+GET uses bounded keyset pagination: `limit` defaults to 100 (1..100), and `afterId`
+is the last returned `grantId` (nonnegative). Lists remain arrays and include revoked
+records. A source/target authorization evaluation reads at most 1,001 rows and
+returns 503 when legacy state exceeds 1,000; it never silently truncates permissions.
+Token snapshots contain at most 64 scopes and introspection rechecks live state in
+one SQL snapshot, including recipient/source credential versions and grant versions.

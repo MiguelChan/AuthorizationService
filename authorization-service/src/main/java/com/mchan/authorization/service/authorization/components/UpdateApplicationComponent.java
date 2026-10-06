@@ -49,6 +49,7 @@ public class UpdateApplicationComponent {
         if (application == null) {
             throw new InvalidArgumentException("Application is required");
         }
+        inputValidator.validateMetadata(application);
         if (application.getRedirectUrl() != null) {
             inputValidator.validateRedirectUrl(application.getRedirectUrl());
         }

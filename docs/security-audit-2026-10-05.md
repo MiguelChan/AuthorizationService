@@ -13,7 +13,7 @@ The [phase-0 design](../design-docs/phase0/DesignDocument.md) describes a multi-
 | Application consumer identities | Existing entities are global administrator identities | Explicit application membership model; cross-tenant tests |
 | Consumer-user roles | Authentication tokens have no granted authorities; owner checks are the policy | Application-scoped read/create/update/delete/admin policy and owner-controlled assignment; never accept caller-assigned roles |
 | User token/refresh flow | No consumer-user token or refresh implementation | Separate approved OAuth/OIDC flow; do not add a password grant or reuse confidential service tokens as user identities |
-| Auditability | Legacy session rows are written on every Basic request | Separate successful login/authorization/security-event records with bounded retention and redaction |
+| Auditability | Interactive browser logins produce one row; Basic reads no longer write history | Add complete authorization/security-event records and approve a bounded retention policy |
 
 The original JWT suggestion differs from the explicitly documented opaque service-token decision in [the current contract](oauth-client-credentials.md). Current online authorization supports immediate credential/grant revocation. This audit does not reintroduce self-contained permission caching or imply complete OAuth/OIDC support.
 
@@ -43,3 +43,47 @@ Further review includes authentication brute force, header/query/body bounds, SQ
 Initial target: 1,000 completed requests/s and a separate burst test with up to 1,000 in-flight requests. Provisional acceptance is p95 <=250ms and <1% unexpected errors for the declared sustained workload. Report offered and completed rates, status codes, dropped work, p50/p95/p99, warmup, duration, BCrypt cost, resources and database configuration. Rate-limited responses count as rejected demand rather than successful throughput.
 
 Measure authenticated OAuth introspection with active permissions; liveness traffic alone cannot establish the target. Run a resource-constrained container profile as well as the host profile. Keep request bodies, headers, queues, concurrent work, connection pools, credential-verification state and catalog pages bounded. Never cache authorization outcomes across revocation.
+
+## Corrections and current boundaries
+
+The stack adds browser CSRF and exact-origin CORS, production-default deployment,
+bounded body/header/query/metadata/catalog handling, bounded authentication
+concurrency and login failure state, and per-instance rate budgets. Actual packaged
+TLS tests reject forged session mutations, owner IDOR, duplicate credentials/forms,
+chunked oversized bodies and an SQL-injection username; they exercise the real
+receiving service before and after grant revocation. Legacy client hash upgrades
+preserve credential versions; compare-and-set regression tests cover rotation,
+revocation and concurrent hash-only upgrade races. Human BCrypt cost is unchanged.
+
+Introspection uses a single SQL snapshot for token/issuer/audience/expiry and live
+source/recipient credential, application, endpoint and grant state, after separate
+client-secret authentication. No permission result is cached across revocation.
+[Capacity evidence](capacity.md) distinguishes sustained traffic, bursts and issued
+tokens. [The retention proposal](retention-proposal.md) is awaiting approval.
+
+## Frontend dependency audit and missing product capabilities
+
+The locked frontend dependency tree produces 245 npm audit findings: 19 low,
+132 moderate, 75 high and 19 critical. Direct affected packages include axios,
+react-router-dom and legacy react-scripts/Storybook/testing tooling. These counts
+include transitive build dependencies; they are not proof of 19 exploitable
+production browser paths. Reachability and advisory-by-advisory triage remain
+necessary. The Java/Spring upgrade retains this locked frontend tree; it does not
+claim to remediate these findings. Avoid an unreviewed `npm audit fix --force`.
+
+Prioritized remaining work:
+
+1. Triage browser runtime dependencies and replace unsupported frontend/build
+   tooling in a separate migration with actual registration/login/profile coverage.
+2. Design application-scoped consumer membership, owner-controlled role assignment
+   and default-deny permissions. Current authenticated authorities are empty and
+   owner checks remain the administration policy; service bearers cannot become
+   administrators. There is no existing user-role system to declare complete.
+3. Implement the separately designed consumer-user OAuth/OIDC and lifecycle flows
+   (email verification, recovery/MFA, deactivation and session revocation), with
+   cross-tenant and role-escalation tests.
+4. Approve storage retention; add deployment monitoring, distributed/gateway rate
+   policies and receiving-service production validation before a capacity promise.
+
+The local security audit is bounded to owned disposable fixtures. Production
+penetration testing, external scanning and production throughput were not performed.

@@ -3,7 +3,12 @@
 Application creation returns `applicationId`, `clientId` (random UUID) and `clientSecret`
 (32 cryptographically random bytes, encoded as 43 base64url characters). Save the secret
 from this response: it cannot be retrieved later. Responses have `Cache-Control: no-store`.
-Only a peppered BCrypt hash is stored using the existing password-hashing configuration.
+Only a versioned `hmac-sha256$` fingerprint keyed by the external pepper is stored.
+These are server-generated 256-bit secrets; human passwords retain peppered BCrypt.
+Existing BCrypt client hashes remain compatible and upgrade after a successful check
+using a version/hash compare-and-set, without rotating the secret or invalidating tokens.
+At most eight legacy client verifications run at once; excess demand receives 503.
+A concurrent credential rotation or revocation cannot be overwritten by this upgrade.
 Credential entity/response string representations omit the secret and its hash.
 
 An authenticated application owner can POST `/api/applications/{id}/credentials/rotate`

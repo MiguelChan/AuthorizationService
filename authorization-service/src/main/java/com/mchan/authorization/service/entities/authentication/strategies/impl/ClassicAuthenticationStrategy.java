@@ -6,10 +6,7 @@ import com.mchan.authorization.service.entities.authentication.models.ClassicAut
 import com.mchan.authorization.service.entities.authentication.strategies.AuthenticationStrategy;
 import com.mchan.authorization.service.entities.components.GetProfileComponent;
 import com.mchan.authorization.service.entities.dao.AccountDao;
-import com.mchan.authorization.service.entities.dao.SessionsDao;
 import com.mchan.authorization.service.entities.dao.entities.ClassicAccountEntity;
-import com.mchan.authorization.service.entities.dao.entities.SessionEntity;
-import com.mchan.authorization.service.entities.utils.DateProvider;
 import com.mchan.authorization.service.entities.utils.SecurePasswordUtils;
 import com.mchan.authorization.service.exceptions.InvalidArgumentException;
 import com.mchan.authorization.service.exceptions.NotAuthorizedException;
@@ -26,32 +23,28 @@ import org.springframework.stereotype.Component;
 public class ClassicAuthenticationStrategy implements AuthenticationStrategy {
 
     private final AccountDao accountDao;
-    private final SessionsDao sessionsDao;
-    private final DateProvider dateProvider;
     private final GetProfileComponent getProfileComponent;
     private final SecurePasswordUtils securePasswordUtils;
+    private final String missingAccountHash;
 
     /**
      * .
      *
      * @param accountDao .
      *
-     * @param sessionsDao .
-     *
-     * @param dateProvider .
-     *
      * @param securePasswordUtils .
      */
     @Autowired
     public ClassicAuthenticationStrategy(AccountDao accountDao,
-                                         SessionsDao sessionsDao,
                                          GetProfileComponent getProfileComponent,
-                                         DateProvider dateProvider,
                                          SecurePasswordUtils securePasswordUtils) {
         this.accountDao = accountDao;
         this.securePasswordUtils = securePasswordUtils;
-        this.sessionsDao = sessionsDao;
-        this.dateProvider = dateProvider;
+        try {
+            this.missingAccountHash = securePasswordUtils.createSecurePassword("internal-missing-account-verifier");
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to initialize authentication verifier", e);
+        }
         this.getProfileComponent = getProfileComponent;
     }
 
@@ -62,14 +55,10 @@ public class ClassicAuthenticationStrategy implements AuthenticationStrategy {
         String password = request.getPassword();
 
         ClassicAccountEntity accountEntity = accountDao.getAccountByEmail(username);
-        if (accountEntity == null) {
-            throw new NotAuthorizedException("Invalid Username or Password");
-        }
-
-        String encryptedPassword = accountEntity.getPassword();
+        String encryptedPassword = accountEntity == null ? missingAccountHash : accountEntity.getPassword();
 
         try {
-            if (!securePasswordUtils.isValidPassword(password, encryptedPassword)) {
+            if (!securePasswordUtils.isValidPassword(password, encryptedPassword) || accountEntity == null) {
                 throw new NotAuthorizedException("Invalid Username or Password");
             }
         } catch (NotAuthorizedException e) {
@@ -79,19 +68,7 @@ public class ClassicAuthenticationStrategy implements AuthenticationStrategy {
             throw new RuntimeException(e);
         }
 
-        createSession(accountEntity);
-
         return getProfileComponent.getProfile(accountEntity.getProfileId());
-    }
-
-    private void createSession(ClassicAccountEntity classicAccountEntity) {
-        SessionEntity sessionEntity = SessionEntity.builder()
-            .accountId(classicAccountEntity.getAccountId())
-            .sessionType(classicAccountEntity.getAccountType())
-            .sessionTime(dateProvider.now())
-            .build();
-
-        sessionsDao.createSession(sessionEntity);
     }
 
     private ClassicAuthenticationRequest getRequest(AuthenticationRequest request) {

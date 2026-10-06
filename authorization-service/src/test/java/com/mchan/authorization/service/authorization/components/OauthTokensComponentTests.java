@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 
 import com.mchan.authorization.lib.models.ApplicationGrant;
 import com.mchan.authorization.service.authorization.dao.entities.ClientCredentialEntity;
-import com.mchan.authorization.service.authorization.dao.entities.OauthPermissionEntity;
+import com.mchan.authorization.service.authorization.dao.entities.OauthIntrospectionEntity;
 import com.mchan.authorization.service.authorization.dao.entities.OauthTokenEntity;
 import com.mchan.authorization.service.authorization.dao.mappers.ApplicationGrantsMapper;
 import com.mchan.authorization.service.authorization.dao.mappers.ClientCredentialsMapper;
@@ -62,24 +62,24 @@ public class OauthTokensComponentTests {
 
     @Test
     public void introspection_should_bindIssuerAudienceExpiryAndLivePermissions() {
-        OauthTokenEntity stored = new OauthTokenEntity();
+        OauthIntrospectionEntity stored = new OauthIntrospectionEntity();
         stored.setSourceId(3);
         stored.setTargetId(7);
         stored.setTargetCredentialVersion(4);
         stored.setIssuer("https://issuer.example");
         stored.setIssuedAt(Date.from(Instant.now()));
         stored.setExpiresAt(Date.from(Instant.now().plusSeconds(300)));
-        when(tokens.findActive(ArgumentMatchers.anyString())).thenReturn(stored);
+
         String value = "a".repeat(43);
         assertThat(component.introspect(client(8, "other", 4), value)).isEqualTo(Map.of("active", false));
         assertThat(component.introspect(client(7, "target", 5), value)).isEqualTo(Map.of("active", false));
-        OauthPermissionEntity permission = new OauthPermissionEntity();
-        permission.setEndpointId(9);
-        permission.setAction("orders.read");
-        permission.setHttpMethod("GET");
-        permission.setPath("/orders");
-        when(tokens.permissions(ArgumentMatchers.anyString())).thenReturn(List.of(permission));
-        when(tokens.clientId(3)).thenReturn("source");
+        stored.setEndpointId(9);
+        stored.setAction("orders.read");
+        stored.setHttpMethod("GET");
+        stored.setPath("/orders");
+        stored.setSourceClientId("source");
+        when(tokens.introspection(ArgumentMatchers.anyString(), ArgumentMatchers.eq(7), ArgumentMatchers.eq(4L),
+            ArgumentMatchers.eq("https://issuer.example"))).thenReturn(List.of(stored));
         Map<String, Object> response = component.introspect(client(7, "target", 4), value);
         assertThat(response.get("active")).isEqualTo(true);
         assertThat(response.get("aud")).isEqualTo("target");
